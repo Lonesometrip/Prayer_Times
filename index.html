@@ -642,16 +642,27 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- App ID and Firebase Config (Provided by Canvas Environment) ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'prayergrid-default-app-id'; // Default for local testing
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "YOUR_API_KEY", // Replace with your actual config for local testing
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
+        // --- App ID and Firebase Config ---
+        // IMPORTANT FOR GITHUB PAGES DEPLOYMENT:
+        // The __app_id and __firebase_config variables are provided by the Canvas environment.
+        // When deploying to GitHub Pages (or any other environment outside Canvas),
+        // these will be undefined. You MUST replace the placeholder values in the
+        // firebaseConfig object below with the actual configuration details from
+        // YOUR OWN Firebase project for features like settings persistence to work.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'prayergrid-default-app-id'; 
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                // !!! REPLACE WITH YOUR FIREBASE PROJECT'S CONFIGURATION !!!
+                apiKey: "YOUR_API_KEY", 
+                authDomain: "YOUR_AUTH_DOMAIN",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_STORAGE_BUCKET",
+                messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+                appId: "YOUR_APP_ID"
+                // !!! END OF PLACEHOLDER CONFIG !!!
+            };
 
         // --- Firebase Instances ---
         let fbApp;
@@ -679,7 +690,12 @@
             { id: 11, name: "Kuwait" }, { id: 12, name: "Qatar" },
             { id: 14, name: "Dubai (Awqaf)" }, { id: 15, name: "Moonsighting Committee Worldwide" }
         ];
-        const GEMINI_API_KEY = ""; // Keep empty, Canvas will inject if needed
+        
+        // IMPORTANT FOR GITHUB PAGES DEPLOYMENT:
+        // For the "Reflect" feature to work, you need to obtain your own Gemini API key
+        // from Google AI Studio (https://aistudio.google.com/app/apikey) and replace
+        // the empty string below with your actual key.
+        const GEMINI_API_KEY = ""; // !!! REPLACE WITH YOUR GEMINI API KEY !!!
 
         // --- DOM Elements ---
         const bodyEl = document.body;
@@ -745,6 +761,9 @@
                         console.log("User is signed out. Attempting to sign in...");
                         isAuthReady = false;
                         // Try to sign in (custom token or anonymously)
+                        // For GitHub Pages, __initial_auth_token will be undefined.
+                        // The code will attempt anonymous sign-in.
+                        // This requires Anonymous sign-in to be enabled in your Firebase project.
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             try {
                                 await signInWithCustomToken(auth, __initial_auth_token);
@@ -763,7 +782,7 @@
 
             } catch (error) {
                 console.error("Firebase initialization failed:", error);
-                displayError("Core services failed to initialize. Settings will not be saved.");
+                displayError("Core services failed to initialize. Settings will not be saved. Ensure Firebase config is correct for GitHub Pages.");
                 // Fallback to default behavior if Firebase fails
                 applyDefaultSettingsAndFetch();
             }
@@ -774,20 +793,33 @@
                 console.warn("Cannot save settings: Firebase not ready or user not authenticated.");
                 return;
             }
+            // Ensure apiKey in firebaseConfig is not a placeholder if trying to save
+            if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                console.warn("Cannot save settings: Firebase API key is a placeholder. Update firebaseConfig with your actual project details for GitHub Pages.");
+                // Optionally, provide a non-critical error to the user
+                // displayError("Settings cannot be saved online. Please configure Firebase.", false);
+                return;
+            }
             const settingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/prayerGridSettings`, "userPreferences");
             try {
-                await setDoc(settingsRef, settingsToSave, { merge: true }); // Use merge to update, not overwrite
+                await setDoc(settingsRef, settingsToSave, { merge: true }); 
                 console.log("User settings saved to Firestore:", settingsToSave);
             } catch (error) {
                 console.error("Error saving user settings to Firestore:", error);
-                displayError("Failed to save preferences. Check connection.", false); // Non-critical error
+                displayError("Failed to save preferences. Check connection.", false); 
             }
         }
 
         async function loadUserSettings() {
             if (!isAuthReady || !currentUserId || !db) {
                 console.warn("Cannot load settings: Firebase not ready or user not authenticated.");
-                applyDefaultSettingsAndFetch(); // Fallback to defaults
+                applyDefaultSettingsAndFetch(); 
+                return;
+            }
+            // Ensure apiKey in firebaseConfig is not a placeholder if trying to load
+            if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+                console.warn("Cannot load settings: Firebase API key is a placeholder. Using default settings. Update firebaseConfig for GitHub Pages.");
+                applyDefaultSettingsAndFetch();
                 return;
             }
             const settingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/prayerGridSettings`, "userPreferences");
@@ -797,7 +829,6 @@
                     const settings = docSnap.data();
                     console.log("User settings loaded from Firestore:", settings);
 
-                    // Apply loaded settings
                     cityInputEl.value = settings.city || DEFAULT_CITY;
                     countryInputEl.value = settings.country || DEFAULT_COUNTRY;
                     PRAYER_API_METHOD = settings.calculationMethod !== undefined ? settings.calculationMethod : DEFAULT_PRAYER_API_METHOD;
@@ -809,7 +840,6 @@
                     
                     applyTheme(THEMES[currentThemeIndex]);
 
-                    // Fetch prayer times based on loaded location preference
                     if (settings.useGeoLocation && settings.latitude && settings.longitude) {
                         fetchPrayerTimesByCoordinates(settings.latitude, settings.longitude);
                     } else {
@@ -843,14 +873,12 @@
         // --- Theme and UI Functions ---
         function applyTheme(themeClassName) {
             THEMES.forEach(cls => bodyEl.classList.remove(cls));
-            // Ensure the default :root variables are used if 'theme-cyberpunk' is selected or no class is added
             if (themeClassName && themeClassName !== 'theme-cyberpunk') { 
                  bodyEl.classList.add(themeClassName);
             } else {
-                 bodyEl.classList.add('theme-cyberpunk'); // Explicitly add for default or if it's the one
+                 bodyEl.classList.add('theme-cyberpunk'); 
             }
-            // Update Three.js background to match the new theme
-            if (typeof updateThreeJSTheme === 'function') { // Check if Three.js part is initialized
+            if (typeof updateThreeJSTheme === 'function') { 
                 updateThreeJSTheme();
             }
         }
@@ -876,8 +904,7 @@
                 nextPrayerCountdownEl.textContent = '--:--:--';
                 if(countdownInterval) clearInterval(countdownInterval);
             } else { 
-                // For non-critical errors, like reflection modal
-                if (reflectionTextEl) { // Check if element exists
+                if (reflectionTextEl) { 
                      reflectionTextEl.innerHTML = `<span style="color: var(--error-border)">// REFLECTION ERROR: ${message}</span>`;
                 }
             }
@@ -928,6 +955,14 @@
         async function fetchReflectionFromGemini(prayerName) {
             const prompt = `Generate a short, insightful, and inspiring Islamic spiritual reflection (1-3 sentences) suitable for the ${prayerName} prayer time. If possible, the reflection should be inspired by or subtly allude to a relevant verse from the Quran or a Hadith concerning this prayer or its significance. Keep the language accessible and uplifting. Focus on the core spiritual meaning.`;
             showReflectionModal(prayerName);
+            
+            if (!GEMINI_API_KEY || GEMINI_API_KEY === "") {
+                console.warn("Gemini API Key is missing. Please add it to the script for reflections to work on GitHub Pages.");
+                displayError("Reflection service not available (API key missing).", false);
+                reflectionLoadingSpinnerEl.classList.add('hidden');
+                return;
+            }
+
             let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
             const payload = { contents: chatHistory };
             const apiKey = GEMINI_API_KEY; 
@@ -970,13 +1005,11 @@
         function startCountdown(timings) {
             if (countdownInterval) clearInterval(countdownInterval);
             
-            // If a prayer is already "Now!" and hasn't been acknowledged, keep its alert
             if (prayerCurrentlyNow) {
                 updateActivePrayerHighlight(prayerCurrentlyNow, true);
             } else {
-                updateActivePrayerHighlight(null); // Clear previous highlight if no prayer is "Now!"
+                updateActivePrayerHighlight(null); 
             }
-
 
             if (!timings) {
                 nextPrayerNameEl.textContent = 'N/A';
@@ -991,11 +1024,9 @@
 
             const prayerSequence = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
-            // If a prayer is already "Now!", don't look for the next one yet for countdown purposes
-            // unless it has been acknowledged (prayerCurrentlyNow is null)
             if (!prayerCurrentlyNow) {
                 for (const prayer of prayerSequence) {
-                    if (timings[prayer] && prayer !== "Sunrise") { // Exclude Sunrise from being "next" for highlighting/countdown
+                    if (timings[prayer] && prayer !== "Sunrise") { 
                         const [hours, minutes] = timings[prayer].split(':').map(Number);
                         const prayerDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
                         if (prayerDate > now) {
@@ -1007,7 +1038,7 @@
                     }
                 }
 
-                if (!nextPrayerTime && timings.Fajr && prayerSequence.includes("Fajr")) { // Fajr tomorrow
+                if (!nextPrayerTime && timings.Fajr && prayerSequence.includes("Fajr")) { 
                     const [hours, minutes] = timings.Fajr.split(':').map(Number);
                     nextPrayerTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hours, minutes);
                     nextPrayerLabel = "Fajr"; 
@@ -1015,13 +1046,11 @@
                 }
             }
 
-
-            if (nextPrayerTime && !prayerCurrentlyNow) { // Only start countdown if no prayer is currently "Now!"
+            if (nextPrayerTime && !prayerCurrentlyNow) { 
                 nextPrayerNameEl.textContent = displayPrayerLabel;
-                if (nextPrayerLabel !== "Sunrise") { // Don't highlight Sunrise as "next active"
+                if (nextPrayerLabel !== "Sunrise") { 
                      updateActivePrayerHighlight(nextPrayerLabel, false);
                 }
-
 
                 countdownInterval = setInterval(() => {
                     const currentTime = new Date();
@@ -1031,14 +1060,12 @@
                         clearInterval(countdownInterval);
                         nextPrayerCountdownEl.textContent = "Now!";
                         
-                        if (nextPrayerLabel !== "Sunrise") { // Sunrise doesn't get a "Now!" alert
-                            prayerCurrentlyNow = nextPrayerLabel; // Set the prayer as "Now!"
-                            updateActivePrayerHighlight(prayerCurrentlyNow, true); // Apply "Now!" alert style
+                        if (nextPrayerLabel !== "Sunrise") { 
+                            prayerCurrentlyNow = nextPrayerLabel; 
+                            updateActivePrayerHighlight(prayerCurrentlyNow, true); 
                         } else {
-                            // For Sunrise, just re-fetch to move to Dhuhr
                             fetchBasedOnLastKnown();
                         }
-                        // No automatic re-fetch here, user must click prayer name to dismiss "Now!"
                         return;
                     }
                     const hoursLeft = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -1047,12 +1074,11 @@
                     nextPrayerCountdownEl.textContent = 
                         `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
                 }, 1000);
-            } else if (!prayerCurrentlyNow) { // If no next prayer and no prayer is "Now!"
+            } else if (!prayerCurrentlyNow) { 
                 nextPrayerNameEl.textContent = 'N/A';
                 nextPrayerCountdownEl.textContent = 'Unavailable';
                 updateActivePrayerHighlight(null); 
             } else {
-                // A prayer is "Now!" and alert is active. Update countdown display.
                 nextPrayerNameEl.textContent = PRAYER_NAMES[prayerCurrentlyNow] || prayerCurrentlyNow;
                 nextPrayerCountdownEl.textContent = "Now!";
                 updateActivePrayerHighlight(prayerCurrentlyNow, true);
@@ -1078,7 +1104,6 @@
                 fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
             }
         }
-
 
         async function fetchPrayerTimesByCity(city, country) {
             if (!city || city.trim() === "") {
@@ -1122,8 +1147,7 @@
                 }
                 
                 if (responseData.data && responseData.data.timings) { 
-                    displayPrayerTimes(responseData.data); // This will render cards
-                    // If a prayer is "Now!" from a previous state, re-apply its alert after rendering
+                    displayPrayerTimes(responseData.data); 
                     if (prayerCurrentlyNow) {
                         const nowPrayerTime = responseData.data.timings[prayerCurrentlyNow];
                         if (nowPrayerTime) {
@@ -1131,17 +1155,16 @@
                              const nowPrayerDate = new Date();
                              nowPrayerDate.setHours(hours, minutes, 0, 0);
                              const systemTime = new Date();
-                             // Check if it's still "Now" (within a small margin, e.g., 1 minute)
                              if (Math.abs(systemTime - nowPrayerDate) < 60000) {
                                  updateActivePrayerHighlight(prayerCurrentlyNow, true);
                              } else {
-                                 prayerCurrentlyNow = null; // No longer "Now"
+                                 prayerCurrentlyNow = null; 
                              }
                         } else {
                             prayerCurrentlyNow = null;
                         }
                     }
-                    startCountdown(responseData.data.timings); // This will set the next prayer highlight
+                    startCountdown(responseData.data.timings); 
                     
                     const displayCity = responseData.data.meta.timezone.split('/').pop().replace(/_/g, ' ') || city;
                     updateLocationDisplay(displayCity, country || '');
@@ -1160,7 +1183,6 @@
                 showLoading(false);
             }
         }
-
 
         async function fetchPrayerTimesByCoordinates(latitude, longitude) {
             showLoading(true); clearError(true); clearPrayerTimes();
@@ -1185,14 +1207,14 @@
                 
                 if (responseData.data && responseData.data.timings) {
                     displayPrayerTimes(responseData.data);
-                     if (prayerCurrentlyNow) { // Re-check "Now" status
+                     if (prayerCurrentlyNow) { 
                         const nowPrayerTime = responseData.data.timings[prayerCurrentlyNow];
                         if (nowPrayerTime) {
                              const [hours, minutes] = nowPrayerTime.split(':').map(Number);
                              const nowPrayerDate = new Date();
                              nowPrayerDate.setHours(hours, minutes, 0, 0);
                              const systemTime = new Date();
-                             if (Math.abs(systemTime - nowPrayerDate) < 60000) { // 1 minute margin
+                             if (Math.abs(systemTime - nowPrayerDate) < 60000) { 
                                  updateActivePrayerHighlight(prayerCurrentlyNow, true);
                              } else {
                                  prayerCurrentlyNow = null;
@@ -1246,11 +1268,11 @@
                     const nameEl = document.createElement('span');
                     if (key !== 'Sunrise') { 
                         nameEl.className = 'prayer-name text-md sm:text-lg font-medium prayer-name-clickable';
-                        nameEl.setAttribute('role', 'button'); // ACCESSIBILITY
-                        nameEl.setAttribute('tabindex', '0');    // ACCESSIBILITY
+                        nameEl.setAttribute('role', 'button'); 
+                        nameEl.setAttribute('tabindex', '0');    
                         nameEl.textContent = prayerNameDisplay;
-                        nameEl.onclick = () => navigateToAthkarPage(key); // Pass the key
-                        nameEl.onkeydown = (e) => { // ACCESSIBILITY: Allow activation with Enter/Space
+                        nameEl.onclick = () => navigateToAthkarPage(key); 
+                        nameEl.onkeydown = (e) => { 
                             if (e.key === 'Enter' || e.key === ' ') {
                                 e.preventDefault();
                                 navigateToAthkarPage(key);
@@ -1281,18 +1303,17 @@
             });
         }
         
-        function navigateToAthkarPage(prayerKey) { // Changed to prayerKey
-            // If the clicked prayer is the one currently "Now!", dismiss the alert and refresh.
+        function navigateToAthkarPage(prayerKey) { 
             if (prayerCurrentlyNow === prayerKey) {
                 prayerCurrentlyNow = null; 
-                updateActivePrayerHighlight(null); // Clear "Now" alert visually
-                fetchBasedOnLastKnown(); // Re-fetch to update countdown to the *new* next prayer
+                updateActivePrayerHighlight(null); 
+                fetchBasedOnLastKnown(); 
             }
             prayerTimesPageEl.classList.remove('active');
             athkarPageEl.classList.add('active');
             document.body.scrollTop = 0; 
             document.documentElement.scrollTop = 0; 
-            loadAthkarContent(PRAYER_NAMES[prayerKey] || prayerKey); // Use display name for Athkar page title
+            loadAthkarContent(PRAYER_NAMES[prayerKey] || prayerKey); 
         }
 
         function navigateToPrayerTimesPage() {
@@ -1353,7 +1374,7 @@
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         console.log("Geolocation success:", position.coords);
-                        prayerCurrentlyNow = null; // Reset "Now" state on location change
+                        prayerCurrentlyNow = null; 
                         fetchPrayerTimesByCoordinates(position.coords.latitude, position.coords.longitude);
                     },
                     (error) => {
@@ -1412,7 +1433,7 @@
                 cityInputEl.focus(); 
                 return; 
             }
-            prayerCurrentlyNow = null; // Reset "Now" state on location change
+            prayerCurrentlyNow = null; 
             fetchPrayerTimesByCity(city, country);
         }
 
@@ -1429,7 +1450,7 @@
             PRAYER_API_METHOD = parseInt(calculationMethodSelectEl.value);
             PRAYER_API_SCHOOL = parseInt(asrMethodSelectEl.value);
             console.log(`Settings changed by user: Method ID: ${PRAYER_API_METHOD}, Asr School: ${PRAYER_API_SCHOOL}`);
-            prayerCurrentlyNow = null; // Reset "Now" state on settings change
+            prayerCurrentlyNow = null; 
             
             const settingsToSave = {
                 calculationMethod: PRAYER_API_METHOD,
@@ -1456,7 +1477,6 @@
             const isHidden = masterSettingsContent.classList.contains('hidden');
             masterSettingsContent.classList.toggle('hidden');
             masterSettingsIcon.classList.toggle('expanded'); 
-            // ACCESSIBILITY: Toggle ARIA attribute
             masterSettingsHeader.setAttribute('aria-expanded', String(!isHidden));
         }
 
@@ -1601,7 +1621,6 @@
             asrMethodSelectEl.addEventListener('change', handleSettingsChange);
 
             masterSettingsHeader.addEventListener('click', toggleMasterSettings);
-            // ACCESSIBILITY: Set initial state for collapsible section
             masterSettingsHeader.setAttribute('aria-expanded', 'false');
             masterSettingsContent.classList.add('hidden'); 
             masterSettingsIcon.classList.remove('expanded');
