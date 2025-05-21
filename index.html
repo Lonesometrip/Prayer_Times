@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prayer Times Terminal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Default Theme: Cyberpunk (Original) */
+        :root {
+            --font-family: 'Share Tech Mono', monospace;
+            --bg-color: #0a0a1f;
+            --text-color: #00ffcc;
+            --container-bg: rgba(10, 10, 31, 0.85);
+            --container-border: #00ffff;
+            --container-shadow1: #00ffff;
+            --container-shadow2: #00ffff;
+            --header-glow1: #ff00ff;
+            --header-glow2: #ff00ff;
+            --input-bg: rgba(0, 0, 0, 0.5);
+            --input-border: #00ffcc;
+            --input-text: #00ffcc;
+            --input-placeholder: #009999;
+            --input-focus-shadow: #00ffcc;
+            --button-primary-border: #ff00ff;
+            --button-primary-text: #ff00ff;
+            --button-primary-hover-bg: #ff00ff;
+            --button-primary-hover-text: #0a0a1f;
+            --button-secondary-border: #00ffff;
+            --button-secondary-text: #00ffff;
+            --button-secondary-hover-bg: #00ffff;
+            --button-secondary-hover-text: #0a0a1f;
+            --prayer-card-bg: rgba(0, 20, 30, 0.7);
+            --prayer-card-accent: #ff00ff;
+            --prayer-name-text: #00ffcc;
+            --prayer-value-text: #f0f0f0;
+            --prayer-value-shadow: #00ffff;
+            --loading-text: #ff00ff;
+            --error-bg: rgba(255,0,0,0.2);
+            --error-border: #ff0000;
+            --scrollbar-track: #0a0a1f;
+            --scrollbar-thumb: #ff00ff;
+            --modal-bg: rgba(10, 10, 31, 0.95);
+            --modal-border: #ff00ff;
+            --modal-title-text: #ff00ff;
+            --modal-reflection-text: #00ffcc;
+            /* Three.js elements styling */
+            --asmaul-husna-text-color: "#00ffcc"; 
+            --asmaul-husna-font-size: "24px";
+            --asmaul-husna-opacity: 0.7;
+            /* Athkar Page */
+            --athkar-card-bg: rgba(0, 25, 35, 0.8);
+            --athkar-card-border: var(--prayer-card-accent);
+            --athkar-title-text: var(--prayer-name-text);
+            --athkar-arabic-text: var(--text-color);
+            --athkar-translation-text: color-mix(in srgb, var(--text-color) 70%, #fff);
+            /* Settings dropdowns */
+            --select-bg: var(--input-bg);
+            --select-border: var(--input-border);
+            --select-text: var(--input-text);
+            --select-arrow: var(--input-text);
+            /* Collapsible section header */
+            --collapsible-header-text: var(--text-color);
+            --collapsible-icon-color: var(--header-glow1);
+        }
+
+        .theme-emerald-digital {
+            --font-family: 'Sawarabi Gothic', sans-serif;
+            --bg-color: #011c10; --text-color: #90ee90;
+            --container-bg: rgba(1, 28, 16, 0.9); --container-border: #32cd32;
+            --container-shadow1: #32cd32; --container-shadow2: #32cd32;
+            --header-glow1: #ffd700; --header-glow2: #ffd700;
+            --input-bg: rgba(0, 20, 10, 0.6); --input-border: #90ee90;
+            --input-text: #90ee90; --input-placeholder: #2e8b57;
+            --input-focus-shadow: #ffd700;
+            --button-primary-border: #ffd700; --button-primary-text: #ffd700;
+            --button-primary-hover-bg: #ffd700; --button-primary-hover-text: #011c10;
+            --button-secondary-border: #32cd32; --button-secondary-text: #32cd32;
+            --button-secondary-hover-bg: #32cd32; --button-secondary-hover-text: #011c10;
+            --prayer-card-bg: rgba(0, 30, 15, 0.8); --prayer-card-accent: #ffd700;
+            --prayer-name-text: #90ee90; --prayer-value-text: #f5f5f5;
+            --prayer-value-shadow: #32cd32;
+            --loading-text: #ffd700; --error-bg: rgba(139,0,0,0.3);
+            --error-border: #dc143c; --scrollbar-track: #011c10;
+            --scrollbar-thumb: #ffd700; --modal-bg: rgba(1, 28, 16, 0.98);
+            --modal-border: #ffd700; --modal-title-text: #ffd700;
+            --modal-reflection-text: #f5f5f5;
+            --asmaul-husna-text-color: "#ffd700"; 
+            --asmaul-husna-font-size: "26px"; --asmaul-husna-opacity: 0.8;
+            --athkar-card-bg: rgba(0, 35, 20, 0.85); --athkar-card-border: #ffd700;
+            --athkar-title-text: #ffd700; --athkar-arabic-text: #f5f5f5; 
+            --athkar-translation-text: #b0e0b0;
+            --select-bg: var(--input-bg); --select-border: var(--input-border);
+            --select-text: var(--input-text); --select-arrow: var(--input-text);
+            --collapsible-header-text: var(--text-color); --collapsible-icon-color: var(--header-glow1);
+        }
+
+        .theme-celestial-void {
+            --font-family: 'Orbitron', sans-serif;
+            --bg-color: #000010; --text-color: #c0c0c0;
+            --container-bg: rgba(5, 5, 25, 0.9); --container-border: #4a00e0;
+            --container-shadow1: #8e2de2; --container-shadow2: #4a00e0;
+            --header-glow1: #8e2de2; --header-glow2: #4a00e0;
+            --input-bg: rgba(10, 10, 30, 0.6); --input-border: #c0c0c0;
+            --input-text: #c0c0c0; --input-placeholder: #6a5acd;
+            --input-focus-shadow: #8e2de2;
+            --button-primary-border: #8e2de2; --button-primary-text: #8e2de2;
+            --button-primary-hover-bg: #8e2de2; --button-primary-hover-text: #000010;
+            --button-secondary-border: #c0c0c0; --button-secondary-text: #c0c0c0;
+            --button-secondary-hover-bg: #c0c0c0; --button-secondary-hover-text: #000010;
+            --prayer-card-bg: rgba(10, 10, 40, 0.8); --prayer-card-accent: #8e2de2;
+            --prayer-name-text: #c0c0c0; --prayer-value-text: #e0e0e0;
+            --prayer-value-shadow: #4a00e0;
+            --loading-text: #8e2de2; --error-bg: rgba(75,0,130,0.3);
+            --error-border: #4b0082; --scrollbar-track: #000010;
+            --scrollbar-thumb: #8e2de2; --modal-bg: rgba(5, 5, 25, 0.98);
+            --modal-border: #8e2de2; --modal-title-text: #8e2de2;
+            --modal-reflection-text: #e0e0e0;
+            --asmaul-husna-text-color: "#c0c0c0";
+            --asmaul-husna-font-size: "22px"; --asmaul-husna-opacity: 0.65;
+            --athkar-card-bg: rgba(10, 10, 45, 0.85); --athkar-card-border: #8e2de2;
+            --athkar-title-text: #8e2de2; --athkar-arabic-text: #e0e0e0;
+            --athkar-translation-text: #a0a0d0;
+            --select-bg: var(--input-bg); --select-border: var(--input-border);
+            --select-text: var(--input-text); --select-arrow: var(--input-text);
+            --collapsible-header-text: var(--text-color); --collapsible-icon-color: var(--header-glow1);
+        }
+
+        .theme-poster-grid { 
+            --font-family: 'Audiowide', sans-serif; 
+            --bg-color: #202838; --text-color: #ffffff; 
+            --container-bg: rgba(25, 30, 45, 0.9); --container-border: #ff6f61; 
+            --container-shadow1: #ff6f61; --container-shadow2: #ff6f61;
+            --header-glow1: #ff6f61; --header-glow2: #ff8a80; 
+            --input-bg: rgba(10, 15, 25, 0.7); --input-border: #607088; 
+            --input-text: #ffffff; --input-placeholder: #90a0b8;
+            --input-focus-shadow: #ff6f61;
+            --button-primary-border: #ff6f61; --button-primary-text: #ff6f61;
+            --button-primary-hover-bg: #ff6f61; --button-primary-hover-text: #202838;
+            --button-secondary-border: #ffffff; --button-secondary-text: #ffffff;
+            --button-secondary-hover-bg: #ffffff; --button-secondary-hover-text: #202838;
+            --prayer-card-bg: rgba(40, 50, 70, 0.8); --prayer-card-accent: #ff6f61; 
+            --prayer-name-text: #ffffff; --prayer-value-text: #ffc1b3; 
+            --prayer-value-shadow: #ff6f61;
+            --loading-text: #ff6f61; --error-bg: rgba(255,111,97,0.2); 
+            --error-border: #ff6f61; --scrollbar-track: #202838;
+            --scrollbar-thumb: #ff6f61; --modal-bg: rgba(25, 30, 45, 0.98);
+            --modal-border: #ff6f61; --modal-title-text: #ff6f61;
+            --modal-reflection-text: #ffffff;
+            --asmaul-husna-text-color: "#ff6f61";
+            --asmaul-husna-font-size: "28px"; --asmaul-husna-opacity: 0.75;
+            --athkar-card-bg: rgba(30, 38, 56, 0.85); --athkar-card-border: #ff6f61;
+            --athkar-title-text: #ff6f61; --athkar-arabic-text: #ffffff;
+            --athkar-translation-text: #ffe0db;
+            --select-bg: var(--input-bg); --select-border: var(--input-border);
+            --select-text: var(--input-text); --select-arrow: var(--input-text);
+            --collapsible-header-text: var(--text-color); --collapsible-icon-color: var(--header-glow1);
+        }
+
+        .theme-tech-interface {
+            --font-family: 'Share Tech Mono', monospace; /* Or 'Aldrich' */
+            --bg-color: #0A0A0A; 
+            --text-color: #E0E0E0;
+            --container-bg: rgba(15, 15, 15, 0.85); 
+            --container-border: #FF6600;
+            --container-shadow1: #FF6600; 
+            --container-shadow2: #FF4500;
+            --header-glow1: #FF6600; 
+            --header-glow2: #FF4500;
+            --input-bg: rgba(0, 0, 0, 0.6); 
+            --input-border: #FF6600;
+            --input-text: #E0E0E0; 
+            --input-placeholder: #A0A0A0;
+            --input-focus-shadow: #FF4500;
+            --button-primary-border: #FF6600; 
+            --button-primary-text: #FF6600;
+            --button-primary-hover-bg: #FF6600; 
+            --button-primary-hover-text: #0A0A0A;
+            --button-secondary-border: #E0E0E0; 
+            --button-secondary-text: #E0E0E0;
+            --button-secondary-hover-bg: #E0E0E0; 
+            --button-secondary-hover-text: #0A0A0A;
+            --prayer-card-bg: rgba(20, 20, 20, 0.75); 
+            --prayer-card-accent: #FF6600;
+            --prayer-name-text: #FF6600; 
+            --prayer-value-text: #FFFFFF;
+            --prayer-value-shadow: #FF4500;
+            --loading-text: #FF6600; 
+            --error-bg: rgba(255,69,0,0.2);
+            --error-border: #FF4500; 
+            --scrollbar-track: #0A0A0A;
+            --scrollbar-thumb: #FF6600; 
+            --modal-bg: rgba(10, 10, 10, 0.95);
+            --modal-border: #FF6600; 
+            --modal-title-text: #FF6600;
+            --modal-reflection-text: #E0E0E0;
+            --asmaul-husna-text-color: "#FF6600"; 
+            --asmaul-husna-font-size: "24px"; 
+            --asmaul-husna-opacity: 0.7;
+            --athkar-card-bg: rgba(25, 25, 25, 0.8); 
+            --athkar-card-border: #FF6600;
+            --athkar-title-text: #FF6600; 
+            --athkar-arabic-text: #E0E0E0;
+            --athkar-translation-text: #C0C0C0;
+            --select-bg: var(--input-bg); 
+            --select-border: var(--input-border);
+            --select-text: var(--input-text); 
+            --select-arrow: var(--input-text);
+            --collapsible-header-text: var(--text-color); 
+            --collapsible-icon-color: var(--header-glow1);
+        }
+
+        .theme-laser-grid {
+            --font-family: 'Orbitron', sans-serif; /* Or 'Audiowide' */
+            --bg-color: #041348; 
+            --text-color: #1AFE49;
+            --container-bg: rgba(4, 19, 72, 0.85); 
+            --container-border: #3D43B4;
+            --container-shadow1: #1AFE49; 
+            --container-shadow2: #3D43B4;
+            --header-glow1: #1AFE49; 
+            --header-glow2: #3D43B4;
+            --input-bg: rgba(10, 25, 80, 0.6); 
+            --input-border: #1AFE49;
+            --input-text: #1AFE49; 
+            --input-placeholder: #083E12;
+            --input-focus-shadow: #3D43B4;
+            --button-primary-border: #1AFE49; 
+            --button-primary-text: #1AFE49;
+            --button-primary-hover-bg: #1AFE49; 
+            --button-primary-hover-text: #041348;
+            --button-secondary-border: #3D43B4; 
+            --button-secondary-text: #3D43B4;
+            --button-secondary-hover-bg: #3D43B4; 
+            --button-secondary-hover-text: #041348;
+            --prayer-card-bg: rgba(8, 30, 90, 0.75); 
+            --prayer-card-accent: #1AFE49;
+            --prayer-name-text: #1AFE49; 
+            --prayer-value-text: #E0E0FF;
+            --prayer-value-shadow: #3D43B4;
+            --loading-text: #1AFE49; 
+            --error-bg: rgba(61,67,180,0.2);
+            --error-border: #3D43B4; 
+            --scrollbar-track: #041348;
+            --scrollbar-thumb: #1AFE49; 
+            --modal-bg: rgba(4, 19, 72, 0.95);
+            --modal-border: #1AFE49; 
+            --modal-title-text: #1AFE49;
+            --modal-reflection-text: #E0E0FF;
+            --asmaul-husna-text-color: "#1AFE49"; 
+            --asmaul-husna-font-size: "25px"; 
+            --asmaul-husna-opacity: 0.75;
+            --athkar-card-bg: rgba(10, 35, 100, 0.8); 
+            --athkar-card-border: #1AFE49;
+            --athkar-title-text: #1AFE49; 
+            --athkar-arabic-text: #E0E0FF;
+            --athkar-translation-text: #A0A0CF;
+            --select-bg: var(--input-bg); 
+            --select-border: var(--input-border);
+            --select-text: var(--input-text); 
+            --select-arrow: var(--input-text);
+            --collapsible-header-text: var(--text-color); 
+            --collapsible-icon-color: var(--header-glow1);
+        }
+
+
+        body {
+            font-family: var(--font-family); background-color: var(--bg-color);
+            color: var(--text-color); overflow-x: hidden; 
+        }
+        #cyberpunk-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .app-page { display: none; } 
+        .app-page.active { display: block; } 
+
+        #app-container { 
+            background-color: var(--container-bg); border: 1px solid var(--container-border);
+            box-shadow: 0 0 15px var(--container-shadow1), 0 0 30px var(--container-shadow2), inset 0 0 10px color-mix(in srgb, var(--container-border) 40%, transparent);
+            position: relative; z-index: 1;
+        }
+        #athkar-page-container {
+             background-color: var(--container-bg); border: 1px solid var(--container-border);
+            box-shadow: 0 0 15px var(--container-shadow1), 0 0 30px var(--container-shadow2), inset 0 0 10px color-mix(in srgb, var(--container-border) 40%, transparent);
+            position: relative; z-index: 1;
+            width: 90%; max-width: 700px; margin: 2rem auto; padding: 1.5rem; border-radius: 0.5rem;
+        }
+
+        .cyber-header { text-shadow: 0 0 5px var(--header-glow1), 0 0 10px var(--header-glow2), 0 0 15px var(--header-glow2); }
+        .cyber-input, .cyber-select {
+            background-color: var(--select-bg); border: 1px solid var(--select-border);
+            color: var(--select-text); caret-color: var(--header-glow1); transition: box-shadow 0.3s ease;
+            padding: 0.75rem; border-radius: 0.375rem; /* p-3 rounded-md */
+            appearance: none; /* Remove default arrow */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); /* Tailwind gray-500 arrow */
+            background-repeat: no-repeat;
+            background-position: right 0.5rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem; /* Make space for arrow */
+        }
+        .cyber-input::placeholder { color: var(--input-placeholder); }
+        .cyber-input:focus, .cyber-select:focus {
+            outline: none; box-shadow: 0 0 10px var(--input-focus-shadow), 0 0 5px var(--input-focus-shadow) inset;
+            border-color: var(--container-border);
+        }
+        /* Custom arrow color per theme */
+        body.theme-cyberpunk .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2300ffcc' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+        body.theme-emerald-digital .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%2390ee90' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+        body.theme-celestial-void .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23c0c0c0' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+        body.theme-poster-grid .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+        body.theme-tech-interface .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%23FF6600' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+        body.theme-laser-grid .cyber-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%231AFE49' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E"); }
+
+
+        .cyber-button {
+            background-color: transparent; border: 2px solid; transition: all 0.15s ease-out; /* Faster transition for press */
+            text-transform: uppercase; letter-spacing: 1px; padding-top: 0.65rem; padding-bottom: 0.65rem;
+        }
+        .cyber-button:active { /* Press effect */
+            transform: scale(0.97);
+            filter: brightness(0.9);
+        }
+
+        .cyber-button-primary {
+            border-color: var(--button-primary-border); color: var(--button-primary-text);
+            box-shadow: 0 0 5px var(--button-primary-border), inset 0 0 5px color-mix(in srgb, var(--button-primary-border) 50%, transparent);
+        }
+        .cyber-button-primary:hover {
+            background-color: var(--button-primary-hover-bg); color: var(--button-primary-hover-text);
+            box-shadow: 0 0 15px var(--button-primary-border), 0 0 25px var(--button-primary-border);
+        }
+        .cyber-button-secondary {
+            border-color: var(--button-secondary-border); color: var(--button-secondary-text);
+            box-shadow: 0 0 5px var(--button-secondary-border), inset 0 0 5px color-mix(in srgb, var(--button-secondary-border) 50%, transparent);
+        }
+        .cyber-button-secondary:hover {
+            background-color: var(--button-secondary-hover-bg); color: var(--button-secondary-hover-text);
+            box-shadow: 0 0 15px var(--button-secondary-border), 0 0 25px var(--button-secondary-border);
+        }
+        .cyber-button-reflect, .prayer-name-clickable { 
+            border-color: var(--prayer-value-text); color: var(--prayer-value-text);
+            font-size: 0.8rem; padding: 0.3rem 0.6rem; text-transform: none; letter-spacing: 0.5px;
+            box-shadow: 0 0 3px var(--prayer-value-text), inset 0 0 3px color-mix(in srgb, var(--prayer-value-text) 30%, transparent);
+            cursor: pointer;
+        }
+        .cyber-button-reflect:hover, .prayer-name-clickable:hover {
+            background-color: var(--prayer-value-text); color: var(--bg-color);
+            box-shadow: 0 0 10px var(--prayer-value-text);
+        }
+        .prayer-name-clickable { 
+            display: inline-block; 
+            border-radius: 0.25rem;
+            margin-bottom: 0.25rem; 
+        }
+
+        .prayer-time-card {
+            background-color: var(--prayer-card-bg); border-left: 3px solid var(--prayer-card-accent);
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease, background-color 0.3s ease, border-left-color 0.3s ease; /* Added transitions */
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .prayer-time-card:hover { 
+            transform: translateY(-3px) translateX(3px); 
+            box-shadow: 0 0 10px var(--prayer-card-accent); 
+        }
+        .prayer-details { display: flex; flex-direction: column; align-items: flex-start; }
+        .prayer-name { color: var(--prayer-name-text); transition: color 0.3s ease; } 
+        .prayer-value { color: var(--prayer-value-text); text-shadow: 0 0 3px var(--prayer-value-shadow); transition: color 0.3s ease, text-shadow 0.3s ease; }
+        
+        /* Style for the currently active/next prayer */
+        .current-prayer-active {
+            border-left-width: 5px; /* Thicker accent border */
+            border-left-color: var(--header-glow1) !important; /* Use a prominent theme color, !important to override potential specificity issues */
+            box-shadow: 0 0 18px var(--header-glow1), 0 0 8px var(--prayer-card-accent) inset; /* More pronounced shadow */
+            transform: scale(1.03); /* Slightly larger */
+            background-color: color-mix(in srgb, var(--prayer-card-bg) 70%, var(--header-glow1) 30%) !important; /* Tint background more strongly */
+        }
+        .current-prayer-active .prayer-name, 
+        .current-prayer-active .prayer-value {
+            color: var(--header-glow2) !important; /* Make text more vibrant */
+            font-weight: bold;
+            text-shadow: 0 0 5px var(--header-glow2), 0 0 2px var(--text-color);
+        }
+        .current-prayer-active .cyber-button-reflect { /* Style reflect button on active card */
+            border-color: var(--header-glow2);
+            color: var(--header-glow2);
+            box-shadow: 0 0 5px var(--header-glow2), inset 0 0 5px color-mix(in srgb, var(--header-glow2) 50%, transparent);
+        }
+        .current-prayer-active .cyber-button-reflect:hover {
+            background-color: var(--header-glow2);
+            color: var(--bg-color);
+        }
+
+        /* Style for the "Prayer Time is NOW" alert */
+        .prayer-time-now-alert {
+            border-left-width: 7px !important; 
+            border-left-color: var(--header-glow2) !important; 
+            box-shadow: 0 0 25px var(--header-glow2), 0 0 15px var(--prayer-card-accent) inset, 0 0 30px var(--header-glow1) !important; 
+            transform: scale(1.05) !important; 
+            background-color: color-mix(in srgb, var(--prayer-card-bg) 50%, var(--header-glow2) 50%) !important; 
+            animation: pulse-now-alert 1s infinite alternate;
+            z-index: 10; /* Ensure it's above other cards if overlapping due to scale */
+        }
+        .prayer-time-now-alert .prayer-name,
+        .prayer-time-now-alert .prayer-value {
+            color: var(--bg-color) !important; 
+            background-color: var(--header-glow1); 
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+            text-shadow: 0 0 8px var(--bg-color);
+        }
+        .prayer-time-now-alert .cyber-button-reflect {
+            border-color: var(--bg-color) !important;
+            color: var(--bg-color) !important;
+            background-color: var(--header-glow1) !important;
+            box-shadow: 0 0 8px var(--bg-color);
+        }
+        .prayer-time-now-alert .cyber-button-reflect:hover {
+            background-color: var(--header-glow2) !important;
+            color: var(--bg-color) !important;
+            filter: brightness(1.2);
+        }
+
+        @keyframes pulse-now-alert {
+            from {
+                opacity: 1;
+                box-shadow: 0 0 25px var(--header-glow2), 0 0 15px var(--prayer-card-accent) inset, 0 0 30px var(--header-glow1);
+            }
+            to {
+                opacity: 0.85;
+                box-shadow: 0 0 35px var(--header-glow2), 0 0 20px var(--prayer-card-accent) inset, 0 0 40px var(--header-glow1), 0 0 10px var(--text-color);
+            }
+        }
+
+
+        .athkar-card {
+            background-color: var(--athkar-card-bg);
+            border: 1px solid var(--athkar-card-border);
+            border-left-width: 3px; padding: 1rem; margin-bottom: 1rem;
+            border-radius: 0.375rem; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .athkar-title {
+            font-size: 1.1rem; font-weight: 600; color: var(--athkar-title-text);
+            margin-bottom: 0.5rem;
+        }
+        .athkar-arabic {
+            font-size: 1.5rem; color: var(--athkar-arabic-text); margin-bottom: 0.5rem;
+            direction: rtl; font-family: 'Noto Naskh Arabic', 'Times New Roman', serif; 
+        }
+        .athkar-transliteration, .athkar-translation {
+            font-size: 0.9rem; color: var(--athkar-translation-text);
+            margin-bottom: 0.25rem; line-height: 1.4;
+        }
+
+        #loading-indicator span { color: var(--loading-text); text-shadow: 0 0 5px var(--loading-text); }
+        #error-message {
+            color: var(--loading-text); text-shadow: 0 0 5px var(--loading-text);
+            background-color: var(--error-bg); border: 1px solid var(--error-border);
+        }
+        .spinner-path { fill: var(--loading-text); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+        ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--scrollbar-thumb) 80%, black); }
+        #reflection-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center;
+            z-index: 100; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #reflection-modal.active { opacity: 1; visibility: visible; }
+        .reflection-modal-content {
+            background-color: var(--modal-bg); padding: 2rem; border-radius: 8px;
+            border: 1px solid var(--modal-border);
+            box-shadow: 0 0 20px var(--modal-border), 0 0 40px var(--modal-border);
+            width: 90%; max-width: 500px; text-align: center; position: relative;
+        }
+        .reflection-modal-close-btn {
+            position: absolute; top: 10px; right: 15px; font-size: 1.8rem; color: var(--modal-title-text);
+            cursor: pointer; background: none; border: none;
+        }
+        .reflection-modal-close-btn:hover { color: var(--text-color); }
+        #reflection-text {
+            color: var(--modal-reflection-text); margin-top: 1rem; margin-bottom: 1.5rem;
+            font-size: 1.1rem; line-height: 1.6; min-height: 50px;
+        }
+        .modal-title { color: var(--modal-title-text); font-size: 1.5rem; margin-bottom: 1rem; text-shadow: 0 0 5px var(--modal-title-text); }
+        .modal-spinner { display: flex; justify-content: center; align-items: center; height: 50px; }
+
+        .collapsible-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--collapsible-header-text);
+            padding: 0.5rem 0; /* Added some padding */
+        }
+        .collapsible-icon {
+            transition: transform 0.3s ease;
+            color: var(--collapsible-icon-color);
+            font-weight: bold;
+            font-size: 1.5em; /* Made icon larger */
+            margin-left: 0.5rem;
+        }
+         .collapsible-icon.expanded {
+            transform: rotate(45deg); /* Rotate gear icon when expanded */
+        }
+        .collapsible-content.hidden {
+            max-height: 0;
+            overflow: hidden;
+            /* Removed padding and margin transitions for instant collapse */
+            /* opacity: 0; */ /* Opacity transition can make it feel sluggish */
+            transition: max-height 0.3s ease-out;
+        }
+         .collapsible-content {
+            max-height: 1000px; /* Large enough for content */
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out; /* Smooth expand */
+            opacity: 1;
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Sawarabi+Gothic&family=Orbitron:wght@400;700&family=Aldrich&family=Audiowide&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start py-8 px-4">
+
+    <canvas id="cyberpunk-bg"></canvas>
+
+    <div id="prayer-times-page" class="app-page active w-full">
+        <div id="app-container" class="container mx-auto max-w-xl rounded-lg p-6 sm:p-8 overflow-y-auto" style="max-height: 90vh;">
+            <header class="text-center mb-6 sm:mb-8">
+                <h1 class="text-4xl sm:text-5xl font-bold cyber-header bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400">PrayerGrid Terminal</h1>
+                <div class="mt-3">
+                     <button id="cycle-theme-btn" class="cyber-button cyber-button-secondary text-sm py-2 px-3">Cycle Visuals</button>
+                </div>
+                <p id="current-gregorian-date" class="text-cyan-300 mt-3 text-lg"></p>
+                <p id="current-hijri-date" class="text-purple-400 text-md"></p>
+                 <div id="next-prayer-countdown-container" class="mt-4 text-center">
+                    <p class="text-lg" style="color: var(--prayer-name-text);">Next Prayer: <span id="next-prayer-name" class="font-semibold">--</span></p>
+                    <p class="text-2xl font-bold" style="color: var(--prayer-value-text); text-shadow: 0 0 3px var(--prayer-value-shadow);" id="next-prayer-countdown">--:--:--</p>
+                </div>
+            </header>
+
+            <section id="master-settings-section" class="mb-6 sm:mb-8">
+                <div id="master-settings-header" class="collapsible-header text-2xl font-bold mb-3 text-center sm:text-left" role="button" tabindex="0" aria-expanded="false" aria-controls="master-settings-content">
+                    <span>Master Configuration</span>
+                    <span id="master-settings-icon" class="collapsible-icon">⚙️</span>
+                </div>
+                 <div id="master-settings-content" class="collapsible-content hidden" role="region" aria-labelledby="master-settings-header">
+                    <div class="mb-4">
+                        <h3 class="text-xl font-semibold text-pink-400 mb-2">Set Coordinates:</h3>
+                        <div class="bg-black/30 p-4 rounded-md border border-cyan-700/50">
+                            <div class="flex flex-col sm:flex-row gap-3 mb-3">
+                                <input type="text" id="city-input" placeholder="Enter City_Matrix" class="cyber-input flex-grow">
+                                <input type="text" id="country-input" placeholder="Sector (Optional)" class="cyber-input flex-grow">
+                            </div>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button id="search-location-btn" class="cyber-button cyber-button-primary w-full sm:flex-1 font-semibold rounded-md">
+                                    Triangulate
+                                </button>
+                                <button id="get-current-location-btn" class="cyber-button cyber-button-secondary w-full sm:flex-1 font-semibold rounded-md">
+                                    Use GeoLink
+                                </button>
+                            </div>
+                            <p id="current-location-display" class="mt-4 text-center text-green-400 font-medium"></p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-pink-400 mb-2">Calculation Settings:</h3>
+                        <div class="bg-black/30 p-4 rounded-md border border-cyan-700/50 space-y-4">
+                            <div>
+                                <label for="calculation-method-select" class="block text-sm font-medium mb-1" style="color: var(--text-color);">Calculation Method:</label>
+                                <select id="calculation-method-select" class="cyber-select w-full"></select>
+                            </div>
+                            <div>
+                                <label for="asr-method-select" class="block text-sm font-medium mb-1" style="color: var(--text-color);">Asr Juristic Method:</label>
+                                <select id="asr-method-select" class="cyber-select w-full">
+                                    <option value="0">Standard (Shafi, Maliki, Hanbali)</option>
+                                    <option value="1">Hanafi</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="prayer-times-section">
+                <h2 class="text-xl font-semibold text-pink-400 mb-4 text-center">Scheduled Transmissions:</h2>
+                <div id="loading-indicator" class="text-center py-4 hidden">
+                    <div role="status" class="flex justify-center items-center">
+                        <svg aria-hidden="true" class="w-8 h-8 animate-spin text-gray-700 fill-pink-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0492C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5424 39.6781 93.9676 39.0409Z" class="spinner-path" fill="currentFill"/></svg>
+                        <span class="ml-3">Accessing PrayerNet...</span>
+                    </div>
+                </div>
+                <div id="error-message" class="text-center py-3 px-4 rounded-md hidden"></div>
+                <div id="prayer-times-list" class="space-y-3"></div>
+            </section>
+
+            <footer class="text-center mt-8 sm:mt-10 text-sm text-cyan-600/70">
+                <p id="calculation-method-display">Algorithm: ISNA (default)</p>
+                <p>Data Stream via <a href="https://aladhan.com/prayer-times-api" target="_blank" rel="noopener noreferrer" class="text-pink-400 hover:underline hover:text-pink-300">Aladhan Conduit</a>.</p>
+                 <p id="user-id-display" class="mt-2 text-xs"></p> </footer>
+        </div>
+    </div>
+
+    <div id="athkar-page" class="app-page w-full">
+        <div id="athkar-page-container" class="overflow-y-auto" style="max-height: 95vh;">
+            <header class="text-center mb-6">
+                <h1 class="text-3xl sm:text-4xl font-bold cyber-header">Cyber Athkar Cache</h1>
+                <button id="back-to-terminal-btn" class="cyber-button cyber-button-secondary text-sm py-2 px-3 mt-4">Back to Terminal</button>
+            </header>
+
+            <section id="prayer-specific-athkar-section" class="mb-8">
+                <h2 id="prayer-specific-athkar-title" class="text-2xl font-semibold text-pink-400 mb-4">Athkar for <span id="current-prayer-context">Prayer</span>:</h2>
+                <div id="prayer-specific-athkar-list" class="space-y-4">
+                    </div>
+            </section>
+
+            <section id="general-athkar-section">
+                <h2 class="text-2xl font-semibold text-pink-400 mb-4">Browse Hisn al-Muslim:</h2>
+                <div id="general-athkar-list" class="space-y-4">
+                    </div>
+            </section>
+        </div>
+    </div>
+
+
+    <div id="reflection-modal">
+        <div class="reflection-modal-content">
+            <button id="reflection-modal-close-btn" class="reflection-modal-close-btn">&times;</button>
+            <h3 class="modal-title" id="reflection-modal-title">Spiritual Transmission</h3>
+            <div id="reflection-loading-spinner" class="modal-spinner hidden">
+                 <svg aria-hidden="true" class="w-6 h-6 animate-spin text-gray-700 fill-pink-500" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0492C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5424 39.6781 93.9676 39.0409Z" class="spinner-path" fill="currentFill"/></svg>
+                <span class="ml-2 text-pink-400">Receiving data stream...</span>
+            </div>
+            <p id="reflection-text"></p>
+        </div>
+    </div>
+    
+    <script type="module">
+        // Firebase SDK imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- App ID and Firebase Config (Provided by Canvas Environment) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'prayergrid-default-app-id'; // Default for local testing
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "YOUR_API_KEY", // Replace with your actual config for local testing
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // --- Firebase Instances ---
+        let fbApp;
+        let db;
+        let auth;
+        let currentUserId; // Will hold the Firebase User ID
+        let isAuthReady = false; // Flag to ensure auth state is confirmed before Firestore operations
+
+        // --- Constants and Configuration ---
+        const DEFAULT_CITY = 'Neo-Steinbach'; 
+        const DEFAULT_COUNTRY = 'Hessen Sector';
+        const DEFAULT_PRAYER_API_METHOD = 2; 
+        const DEFAULT_PRAYER_API_SCHOOL = 0; 
+        const DEFAULT_THEME_INDEX = 0; // Cyberpunk
+
+        let PRAYER_API_METHOD = DEFAULT_PRAYER_API_METHOD; 
+        let PRAYER_API_SCHOOL = DEFAULT_PRAYER_API_SCHOOL; 
+
+        const CALCULATION_METHODS = [
+            { id: 0, name: "Shia Ithna-Ansari" }, { id: 1, name: "University of Islamic Sciences, Karachi" },
+            { id: 2, name: "Islamic Society of North America (ISNA)" }, { id: 3, name: "Muslim World League (MWL)" },
+            { id: 4, name: "Umm Al-Qura University, Makkah" }, { id: 5, name: "Egyptian General Authority of Survey" },
+            { id: 7, name: "Union Organization islamic de France (UOIF)" }, { id: 8, name: "Majlis Ugama Islam Singapura (MUIS)" },
+            { id: 9, name: "Jabatan Kemajuan Islam Malaysia (JAKIM)" }, { id: 10, name: "Spiritual Administration of Muslims of Russia" },
+            { id: 11, name: "Kuwait" }, { id: 12, name: "Qatar" },
+            { id: 14, name: "Dubai (Awqaf)" }, { id: 15, name: "Moonsighting Committee Worldwide" }
+        ];
+        const GEMINI_API_KEY = ""; // Keep empty, Canvas will inject if needed
+
+        // --- DOM Elements ---
+        const bodyEl = document.body;
+        const prayerTimesPageEl = document.getElementById('prayer-times-page');
+        const athkarPageEl = document.getElementById('athkar-page');
+        const gregorianDateEl = document.getElementById('current-gregorian-date');
+        const hijriDateEl = document.getElementById('current-hijri-date');
+        const cityInputEl = document.getElementById('city-input');
+        const countryInputEl = document.getElementById('country-input');
+        const searchLocationBtn = document.getElementById('search-location-btn');
+        const getCurrentLocationBtn = document.getElementById('get-current-location-btn');
+        const currentLocationDisplayEl = document.getElementById('current-location-display');
+        const prayerTimesListEl = document.getElementById('prayer-times-list');
+        const loadingIndicatorEl = document.getElementById('loading-indicator');
+        const errorMessageEl = document.getElementById('error-message');
+        const calculationMethodDisplayEl = document.getElementById('calculation-method-display');
+        const cycleThemeBtn = document.getElementById('cycle-theme-btn');
+        const calculationMethodSelectEl = document.getElementById('calculation-method-select');
+        const asrMethodSelectEl = document.getElementById('asr-method-select');
+        const nextPrayerNameEl = document.getElementById('next-prayer-name');
+        const nextPrayerCountdownEl = document.getElementById('next-prayer-countdown');
+        const reflectionModalEl = document.getElementById('reflection-modal');
+        const reflectionModalCloseBtn = document.getElementById('reflection-modal-close-btn');
+        const reflectionModalTitleEl = document.getElementById('reflection-modal-title');
+        const reflectionTextEl = document.getElementById('reflection-text');
+        const reflectionLoadingSpinnerEl = document.getElementById('reflection-loading-spinner');
+        const backToTerminalBtn = document.getElementById('back-to-terminal-btn');
+        const prayerSpecificAthkarTitleEl = document.getElementById('prayer-specific-athkar-title');
+        const currentPrayerContextSpan = document.getElementById('current-prayer-context');
+        const prayerSpecificAthkarListEl = document.getElementById('prayer-specific-athkar-list');
+        const generalAthkarListEl = document.getElementById('general-athkar-list');
+        const masterSettingsHeader = document.getElementById('master-settings-header');
+        const masterSettingsContent = document.getElementById('master-settings-content');
+        const masterSettingsIcon = document.getElementById('master-settings-icon');
+        const userIdDisplayEl = document.getElementById('user-id-display'); 
+
+        let countdownInterval; 
+        let prayerCurrentlyNow = null; // Stores the key of the prayer that is "Now!"
+        const PRAYER_NAMES = { Fajr: 'Fajr', Sunrise: 'Sunrise', Dhuhr: 'Dhuhr', Asr: 'Asr', Maghrib: 'Maghrib', Isha: 'Isha' };
+        const THEMES = ['theme-cyberpunk', 'theme-emerald-digital', 'theme-celestial-void', 'theme-poster-grid', 'theme-tech-interface', 'theme-laser-grid']; // Added new themes
+        let currentThemeIndex = DEFAULT_THEME_INDEX; 
+        const ASMAUL_HUSNA = ["Ar-Rahman", "Ar-Rahim", "Al-Malik", "Al-Quddus", "As-Salam", "Al-Mu'min", "Al-Muhaymin", "Al-Aziz", "Al-Jabbar", "Al-Mutakabbir", "Al-Khaliq", "Al-Bari'", "Al-Musawwir", "Al-Ghaffar", "Al-Qahhar", "Al-Wahhab", "Ar-Razzaq", "Al-Fattah", "Al-'Alim", "Al-Qabid", "Al-Basit", "Al-Khafid", "Ar-Rafi'", "Al-Mu'izz", "Al-Mudhill", "As-Sami'", "Al-Basir", "Al-Hakam", "Al-'Adl", "Al-Latif", "Al-Khabir", "Al-Halim", "Al-'Azim", "Al-Ghafur", "Ash-Shakur", "Al-'Ali", "Al-Kabir", "Al-Hafiz", "Al-Muqit", "Al-Hasib", "Al-Jalil", "Al-Karim", "Ar-Raqib", "Al-Mujib", "Al-Wasi'", "Al-Hakim", "Al-Wadud", "Al-Majid", "Al-Ba'ith", "Ash-Shahid", "Al-Haqq", "Al-Wakil", "Al-Qawi", "Al-Matin", "Al-Wali", "Al-Hamid", "Al-Muhsi", "Al-Mubdi'", "Al-Mu'id", "Al-Muhyi", "Al-Mumit", "Al-Hayy", "Al-Qayyum", "Al-Wajid", "Al-Majid", "Al-Wahid", "Al-Ahad", "As-Samad", "Al-Qadir", "Al-Muqtadir", "Al-Muqaddim", "Al-Mu'akhkhir", "Al-Awwal", "Al-Akhir", "Az-Zahir", "Al-Batin", "Al-Wali", "Al-Muta'ali", "Al-Barr", "At-Tawwab", "Al-Muntaqim", "Al-'Afuww", "Ar-Ra'uf", "Malik-ul-Mulk", "Dhu'l-Jalal wa'l-Ikram", "Al-Muqsit", "Al-Jami'", "Al-Ghani", "Al-Mughni", "Al-Mani'", "Ad-Darr", "An-Nafi'", "An-Nur", "Al-Hadi", "Al-Badi'", "Al-Baqi", "Al-Warith", "Ar-Rashid", "As-Sabur"];
+        const HISN_ALMUSLIM_DUAS = [{ id: 1, title: "After Obligatory Prayer (1)", prayerContext: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"], category: "After Prayer", arabic: "أَسْتَغْفِرُ الله (ثَلاثاً) اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يَا ذَا الجَلالِ وَالإِكْرَامِ.", transliteration: "Astaghfirullah (thalāthan). Allāhumma Antas-Salāmu wa minkas-salām, tabārakta yā Dhal-Jalāli wal-Ikrām.", translation: "I seek the forgiveness of Allah (three times). O Allah, You are Peace and from You comes peace. Blessed are You, O Owner of majesty and honor." }, { id: 2, title: "After Obligatory Prayer (2)", prayerContext: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"], category: "After Prayer", arabic: "لا إِلَهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لا مَانِعَ لِمَا أَعْطَيْتَ، وَلا مُعْطِيَ لِمَا مَنَعْتَ، وَلا يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ.", transliteration: "Lā ilāha illallāhu waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu wa huwa `alā kulli shay'in qadīr. Allāhumma lā māni`a limā a`ṭayta, wa lā mu`ṭiya limā mana`ta, wa lā yanfa`u dhal-jaddi minkal-jadd.", translation: "None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise, and He is over all things omnipotent. O Allah, none can prevent what You have willed to bestow and none can bestow what You have willed to prevent, and no wealth or majesty can benefit anyone, as from You is all wealth and majesty." }, { id: 3, title: "Morning Athkar (1)", category: "Morning", arabic: "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", transliteration: "Aṣbaḥnā wa aṣbaḥal-mulku lillāh, walḥamdu lillāh, lā ilāha illallāh waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu, wa huwa `alā kulli shay'in qadīr.", translation: "We have reached the morning and at this very time all sovereignty belongs to Allah, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise and He is over all things omnipotent." }, { id: 4, title: "Evening Athkar (1)", category: "Evening", arabic: "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ وَالْحَمْدُ لِلَّهِ، لاَ إِلَهَ إلاَّ اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", transliteration: "Amsaynā wa amsal-mulku lillāh, walḥamdu lillāh, lā ilāha illallāh waḥdahu lā sharīka lah, lahul-mulku wa lahul-ḥamdu, wa huwa `alā kulli shay'in qadīr.", translation: "We have reached the evening and at this very time all sovereignty belongs to Allah, and all praise is for Allah. None has the right to be worshipped except Allah, alone, without partner, to Him belongs all sovereignty and praise and He is over all things omnipotent." }, { id: 5, title: "Before Sleeping", category: "Night", arabic: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا.", transliteration: "Bismika Allāhumma amūtu wa aḥyā.", translation: "In Your name O Allah, I die and I live." }];
+        
+        // --- Firebase Functions ---
+        async function initializeFirebase() {
+            try {
+                fbApp = initializeApp(firebaseConfig);
+                db = getFirestore(fbApp);
+                auth = getAuth(fbApp);
+                setLogLevel('debug'); // Optional: for detailed Firestore logs
+                console.log("Firebase initialized successfully.");
+
+                // Listen for auth state changes
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        currentUserId = user.uid;
+                        console.log("User is signed in with UID:", currentUserId);
+                        userIdDisplayEl.textContent = `User ID: ${currentUserId}`; // Display User ID
+                        isAuthReady = true;
+                        await loadUserSettings(); // Load settings after user is confirmed
+                    } else {
+                        console.log("User is signed out. Attempting to sign in...");
+                        isAuthReady = false;
+                        // Try to sign in (custom token or anonymously)
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            try {
+                                await signInWithCustomToken(auth, __initial_auth_token);
+                                console.log("Signed in with custom token.");
+                            } catch (customTokenError) {
+                                console.error("Custom token sign-in failed, trying anonymous:", customTokenError);
+                                await signInAnonymously(auth);
+                                console.log("Signed in anonymously after custom token failure.");
+                            }
+                        } else {
+                            await signInAnonymously(auth);
+                            console.log("Signed in anonymously.");
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase initialization failed:", error);
+                displayError("Core services failed to initialize. Settings will not be saved.");
+                // Fallback to default behavior if Firebase fails
+                applyDefaultSettingsAndFetch();
+            }
+        }
+
+        async function saveUserSettings(settingsToSave) {
+            if (!isAuthReady || !currentUserId || !db) {
+                console.warn("Cannot save settings: Firebase not ready or user not authenticated.");
+                return;
+            }
+            const settingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/prayerGridSettings`, "userPreferences");
+            try {
+                await setDoc(settingsRef, settingsToSave, { merge: true }); // Use merge to update, not overwrite
+                console.log("User settings saved to Firestore:", settingsToSave);
+            } catch (error) {
+                console.error("Error saving user settings to Firestore:", error);
+                displayError("Failed to save preferences. Check connection.", false); // Non-critical error
+            }
+        }
+
+        async function loadUserSettings() {
+            if (!isAuthReady || !currentUserId || !db) {
+                console.warn("Cannot load settings: Firebase not ready or user not authenticated.");
+                applyDefaultSettingsAndFetch(); // Fallback to defaults
+                return;
+            }
+            const settingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/prayerGridSettings`, "userPreferences");
+            try {
+                const docSnap = await getDoc(settingsRef);
+                if (docSnap.exists()) {
+                    const settings = docSnap.data();
+                    console.log("User settings loaded from Firestore:", settings);
+
+                    // Apply loaded settings
+                    cityInputEl.value = settings.city || DEFAULT_CITY;
+                    countryInputEl.value = settings.country || DEFAULT_COUNTRY;
+                    PRAYER_API_METHOD = settings.calculationMethod !== undefined ? settings.calculationMethod : DEFAULT_PRAYER_API_METHOD;
+                    PRAYER_API_SCHOOL = settings.asrMethod !== undefined ? settings.asrMethod : DEFAULT_PRAYER_API_SCHOOL;
+                    currentThemeIndex = settings.themeIndex !== undefined ? settings.themeIndex : DEFAULT_THEME_INDEX;
+                    
+                    calculationMethodSelectEl.value = PRAYER_API_METHOD;
+                    asrMethodSelectEl.value = PRAYER_API_SCHOOL;
+                    
+                    applyTheme(THEMES[currentThemeIndex]);
+
+                    // Fetch prayer times based on loaded location preference
+                    if (settings.useGeoLocation && settings.latitude && settings.longitude) {
+                        fetchPrayerTimesByCoordinates(settings.latitude, settings.longitude);
+                    } else {
+                        fetchPrayerTimesByCity(cityInputEl.value, countryInputEl.value);
+                    }
+                } else {
+                    console.log("No user settings found in Firestore. Applying defaults.");
+                    applyDefaultSettingsAndFetch();
+                }
+            } catch (error) {
+                console.error("Error loading user settings from Firestore:", error);
+                displayError("Failed to load preferences. Using defaults.", false);
+                applyDefaultSettingsAndFetch();
+            }
+        }
+        
+        function applyDefaultSettingsAndFetch() {
+            cityInputEl.value = DEFAULT_CITY;
+            countryInputEl.value = DEFAULT_COUNTRY;
+            PRAYER_API_METHOD = DEFAULT_PRAYER_API_METHOD;
+            PRAYER_API_SCHOOL = DEFAULT_PRAYER_API_SCHOOL;
+            currentThemeIndex = DEFAULT_THEME_INDEX;
+
+            calculationMethodSelectEl.value = PRAYER_API_METHOD;
+            asrMethodSelectEl.value = PRAYER_API_SCHOOL;
+            applyTheme(THEMES[currentThemeIndex]);
+            fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
+        }
+
+
+        // --- Theme and UI Functions ---
+        function applyTheme(themeClassName) {
+            THEMES.forEach(cls => bodyEl.classList.remove(cls));
+            // Ensure the default :root variables are used if 'theme-cyberpunk' is selected or no class is added
+            if (themeClassName && themeClassName !== 'theme-cyberpunk') { 
+                 bodyEl.classList.add(themeClassName);
+            } else {
+                 bodyEl.classList.add('theme-cyberpunk'); // Explicitly add for default or if it's the one
+            }
+            // Update Three.js background to match the new theme
+            if (typeof updateThreeJSTheme === 'function') { // Check if Three.js part is initialized
+                updateThreeJSTheme();
+            }
+        }
+        
+        function cycleVisualTheme() {
+            currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+            applyTheme(THEMES[currentThemeIndex]);
+            saveUserSettings({ themeIndex: currentThemeIndex });
+        }
+
+        function showLoading(isLoading) {
+            loadingIndicatorEl.classList.toggle('hidden', !isLoading);
+            prayerTimesListEl.classList.toggle('hidden', isLoading);
+        }
+
+        function displayError(message, isMainError = true) {
+            if (isMainError) {
+                errorMessageEl.textContent = `// ERROR: ${message}`;
+                errorMessageEl.classList.remove('hidden');
+                prayerTimesListEl.innerHTML = '';
+                updateLocationDisplay('Error', 'Could not fetch data');
+                nextPrayerNameEl.textContent = '--';
+                nextPrayerCountdownEl.textContent = '--:--:--';
+                if(countdownInterval) clearInterval(countdownInterval);
+            } else { 
+                // For non-critical errors, like reflection modal
+                if (reflectionTextEl) { // Check if element exists
+                     reflectionTextEl.innerHTML = `<span style="color: var(--error-border)">// REFLECTION ERROR: ${message}</span>`;
+                }
+            }
+        }
+
+        function clearError(isMainError = true) {
+            if (isMainError) {
+                errorMessageEl.classList.add('hidden');
+                errorMessageEl.textContent = '';
+            }
+        }
+        
+        function clearPrayerTimes() { prayerTimesListEl.innerHTML = ''; }
+
+        function updateDateDisplay() {
+            const today = new Date();
+            const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            gregorianDateEl.textContent = `G-DATE: ${today.toLocaleDateString('en-GB', options).replace(/,/g, '')}`;
+        }
+        
+        function updateLocationDisplay(locationName, locationDetails) {
+            let displayText = `GRID: ${locationName}`;
+            if (locationDetails) displayText += ` [${locationDetails}]`;
+            currentLocationDisplayEl.textContent = displayText;
+        }
+
+        function updateCalculationMethodDisplay(methodName) {
+            calculationMethodDisplayEl.textContent = `Algorithm: ${methodName}`;
+        }
+
+        function showReflectionModal(prayerName) {
+            reflectionModalTitleEl.textContent = `Reflection: ${prayerName}`;
+            reflectionTextEl.innerHTML = ''; 
+            reflectionLoadingSpinnerEl.classList.remove('hidden');
+            reflectionModalEl.classList.add('active');
+        }
+
+        function hideReflectionModal() {
+            reflectionModalEl.classList.remove('active');
+            reflectionLoadingSpinnerEl.classList.add('hidden');
+        }
+
+        function displayReflectionInModal(text) {
+            reflectionLoadingSpinnerEl.classList.add('hidden');
+            reflectionTextEl.innerHTML = text.replace(/\n/g, '<br>');
+        }
+
+        async function fetchReflectionFromGemini(prayerName) {
+            const prompt = `Generate a short, insightful, and inspiring Islamic spiritual reflection (1-3 sentences) suitable for the ${prayerName} prayer time. If possible, the reflection should be inspired by or subtly allude to a relevant verse from the Quran or a Hadith concerning this prayer or its significance. Keep the language accessible and uplifting. Focus on the core spiritual meaning.`;
+            showReflectionModal(prayerName);
+            let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+            const payload = { contents: chatHistory };
+            const apiKey = GEMINI_API_KEY; 
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorData = await response.json(); console.error("Gemini API Error Response:", errorData);
+                    throw new Error(errorData.error?.message || `API request failed with status ${response.status}`);
+                }
+                const result = await response.json();
+                if (result.candidates?.[0]?.content?.parts?.[0]) {
+                    displayReflectionInModal(result.candidates[0].content.parts[0].text);
+                } else {
+                    console.error("Unexpected Gemini API response structure:", result);
+                    throw new Error('Reflection data not found in API response.');
+                }
+            } catch (error) {
+                console.error('Error fetching reflection from Gemini:', error);
+                displayError(`Could not generate reflection. ${error.message}`, false);
+                reflectionLoadingSpinnerEl.classList.add('hidden');
+            }
+        }
+        
+        function updateActivePrayerHighlight(activeKey, isNow = false) {
+            document.querySelectorAll('.prayer-time-card').forEach(card => {
+                card.classList.remove('current-prayer-active', 'prayer-time-now-alert');
+                if (activeKey && card.dataset.prayerKey === activeKey) {
+                    if (isNow) {
+                        card.classList.add('prayer-time-now-alert');
+                    } else {
+                        card.classList.add('current-prayer-active');
+                    }
+                }
+            });
+        }
+
+        function startCountdown(timings) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            // If a prayer is already "Now!" and hasn't been acknowledged, keep its alert
+            if (prayerCurrentlyNow) {
+                updateActivePrayerHighlight(prayerCurrentlyNow, true);
+            } else {
+                updateActivePrayerHighlight(null); // Clear previous highlight if no prayer is "Now!"
+            }
+
+
+            if (!timings) {
+                nextPrayerNameEl.textContent = 'N/A';
+                nextPrayerCountdownEl.textContent = 'Waiting for data...';
+                return;
+            }
+
+            const now = new Date();
+            let nextPrayerTime = null;
+            let nextPrayerLabel = ''; 
+            let displayPrayerLabel = ''; 
+
+            const prayerSequence = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+            // If a prayer is already "Now!", don't look for the next one yet for countdown purposes
+            // unless it has been acknowledged (prayerCurrentlyNow is null)
+            if (!prayerCurrentlyNow) {
+                for (const prayer of prayerSequence) {
+                    if (timings[prayer] && prayer !== "Sunrise") { // Exclude Sunrise from being "next" for highlighting/countdown
+                        const [hours, minutes] = timings[prayer].split(':').map(Number);
+                        const prayerDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+                        if (prayerDate > now) {
+                            nextPrayerTime = prayerDate;
+                            nextPrayerLabel = prayer; 
+                            displayPrayerLabel = prayer; 
+                            break;
+                        }
+                    }
+                }
+
+                if (!nextPrayerTime && timings.Fajr && prayerSequence.includes("Fajr")) { // Fajr tomorrow
+                    const [hours, minutes] = timings.Fajr.split(':').map(Number);
+                    nextPrayerTime = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, hours, minutes);
+                    nextPrayerLabel = "Fajr"; 
+                    displayPrayerLabel = "Fajr (Tomorrow)"; 
+                }
+            }
+
+
+            if (nextPrayerTime && !prayerCurrentlyNow) { // Only start countdown if no prayer is currently "Now!"
+                nextPrayerNameEl.textContent = displayPrayerLabel;
+                if (nextPrayerLabel !== "Sunrise") { // Don't highlight Sunrise as "next active"
+                     updateActivePrayerHighlight(nextPrayerLabel, false);
+                }
+
+
+                countdownInterval = setInterval(() => {
+                    const currentTime = new Date();
+                    const timeDifference = nextPrayerTime - currentTime;
+
+                    if (timeDifference <= 0) {
+                        clearInterval(countdownInterval);
+                        nextPrayerCountdownEl.textContent = "Now!";
+                        
+                        if (nextPrayerLabel !== "Sunrise") { // Sunrise doesn't get a "Now!" alert
+                            prayerCurrentlyNow = nextPrayerLabel; // Set the prayer as "Now!"
+                            updateActivePrayerHighlight(prayerCurrentlyNow, true); // Apply "Now!" alert style
+                        } else {
+                            // For Sunrise, just re-fetch to move to Dhuhr
+                            fetchBasedOnLastKnown();
+                        }
+                        // No automatic re-fetch here, user must click prayer name to dismiss "Now!"
+                        return;
+                    }
+                    const hoursLeft = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutesLeft = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+                    const secondsLeft = Math.floor((timeDifference % (1000 * 60)) / 1000);
+                    nextPrayerCountdownEl.textContent = 
+                        `${String(hoursLeft).padStart(2, '0')}:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
+                }, 1000);
+            } else if (!prayerCurrentlyNow) { // If no next prayer and no prayer is "Now!"
+                nextPrayerNameEl.textContent = 'N/A';
+                nextPrayerCountdownEl.textContent = 'Unavailable';
+                updateActivePrayerHighlight(null); 
+            } else {
+                // A prayer is "Now!" and alert is active. Update countdown display.
+                nextPrayerNameEl.textContent = PRAYER_NAMES[prayerCurrentlyNow] || prayerCurrentlyNow;
+                nextPrayerCountdownEl.textContent = "Now!";
+                updateActivePrayerHighlight(prayerCurrentlyNow, true);
+            }
+        }
+        
+        function fetchBasedOnLastKnown() {
+            const lastUsedCity = cityInputEl.value.trim();
+            const lastUsedCountry = countryInputEl.value.trim();
+
+            if (currentLocationDisplayEl.textContent.toLowerCase().includes('lat:')) {
+                const latLonMatch = currentLocationDisplayEl.textContent.match(/Lat: ([\d.-]+), Lon: ([\d.-]+)/);
+                if (latLonMatch) {
+                    fetchPrayerTimesByCoordinates(parseFloat(latLonMatch[1]), parseFloat(latLonMatch[2]));
+                } else if (lastUsedCity) {
+                    fetchPrayerTimesByCity(lastUsedCity, lastUsedCountry);
+                } else {
+                    fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
+                }
+            } else if (lastUsedCity) {
+                fetchPrayerTimesByCity(lastUsedCity, lastUsedCountry);
+            } else {
+                fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
+            }
+        }
+
+
+        async function fetchPrayerTimesByCity(city, country) {
+            if (!city || city.trim() === "") {
+                console.log("City input is empty. Preventing API call.");
+                displayError("Please enter a city name to search.");
+                updateLocationDisplay('Input Error', 'No city provided');
+                showLoading(false); 
+                return; 
+            }
+
+            showLoading(true); clearError(true); clearPrayerTimes();
+            currentLocationDisplayEl.textContent = `Searching for ${city}...`; 
+            let apiUrl = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&method=${PRAYER_API_METHOD}&school=${PRAYER_API_SCHOOL}`;
+            if (country && country.trim() !== "") { 
+                apiUrl += `&country=${encodeURIComponent(country)}`;
+            }
+            console.log("Fetching city times from:", apiUrl); 
+
+            try {
+                const response = await fetch(apiUrl);
+                const responseData = await response.json(); 
+                console.log("City API Response:", responseData); 
+
+                if (!response.ok || responseData.code !== 200) { 
+                    let apiErrorMessage = "Could not find prayer times. Please check the city and country, or try a different location.";
+                    if (responseData.data && typeof responseData.data === 'string' && responseData.data.trim() !== "") {
+                        if (responseData.data.toLowerCase().includes("specify a city") && responseData.data.toLowerCase().includes("country")) {
+                            apiErrorMessage = "Invalid input: Please specify a valid city. Country is optional but can help if the city name is ambiguous.";
+                        } else {
+                            apiErrorMessage = responseData.data; 
+                        }
+                    } else if (responseData.status && responseData.status !== "OK") {
+                         apiErrorMessage = responseData.status;
+                    } else if (responseData.message) { 
+                        apiErrorMessage = responseData.message;
+                    } else if (response.status === 400) { 
+                        apiErrorMessage = "Invalid request (Error 400). Please check city and country names, or the city may not be in our database.";
+                    }
+                    console.error(`API Error (Status ${response.status}, Code ${responseData.code}): Server response - ${JSON.stringify(responseData.data)}`);
+                    throw new Error(`${apiErrorMessage}`);
+                }
+                
+                if (responseData.data && responseData.data.timings) { 
+                    displayPrayerTimes(responseData.data); // This will render cards
+                    // If a prayer is "Now!" from a previous state, re-apply its alert after rendering
+                    if (prayerCurrentlyNow) {
+                        const nowPrayerTime = responseData.data.timings[prayerCurrentlyNow];
+                        if (nowPrayerTime) {
+                             const [hours, minutes] = nowPrayerTime.split(':').map(Number);
+                             const nowPrayerDate = new Date();
+                             nowPrayerDate.setHours(hours, minutes, 0, 0);
+                             const systemTime = new Date();
+                             // Check if it's still "Now" (within a small margin, e.g., 1 minute)
+                             if (Math.abs(systemTime - nowPrayerDate) < 60000) {
+                                 updateActivePrayerHighlight(prayerCurrentlyNow, true);
+                             } else {
+                                 prayerCurrentlyNow = null; // No longer "Now"
+                             }
+                        } else {
+                            prayerCurrentlyNow = null;
+                        }
+                    }
+                    startCountdown(responseData.data.timings); // This will set the next prayer highlight
+                    
+                    const displayCity = responseData.data.meta.timezone.split('/').pop().replace(/_/g, ' ') || city;
+                    updateLocationDisplay(displayCity, country || '');
+                    updateCalculationMethodDisplay(responseData.data.meta.method.name);
+                    saveUserSettings({ city: city, country: country, useGeoLocation: false, calculationMethod: PRAYER_API_METHOD, asrMethod: PRAYER_API_SCHOOL, themeIndex: currentThemeIndex });
+                } else {
+                    console.error("Invalid data structure from API:", responseData);
+                    throw new Error('Prayer times data received in an unexpected format.');
+                }
+            } catch (error) {
+                console.error('City fetch processing error:', error);
+                const userErrorMessage = error.message || `Failed to get times for ${city}. Check connection or input.`;
+                displayError(userErrorMessage);
+                updateLocationDisplay('Error', 'City not found or API issue');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+
+        async function fetchPrayerTimesByCoordinates(latitude, longitude) {
+            showLoading(true); clearError(true); clearPrayerTimes();
+            currentLocationDisplayEl.textContent = 'Acquiring GeoLink signal...';
+            const today = new Date();
+            const dateString = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+            const apiUrl = `https://api.aladhan.com/v1/timings/${dateString}?latitude=${latitude}&longitude=${longitude}&method=${PRAYER_API_METHOD}&school=${PRAYER_API_SCHOOL}`;
+            console.log("Fetching coordinate times from:", apiUrl);
+
+            try {
+                const response = await fetch(apiUrl);
+                const responseData = await response.json();
+                console.log("Coordinates API Response:", responseData);
+
+                if (!response.ok || responseData.code !== 200) {
+                     let apiErrorMessage = "Could not fetch times for your current location.";
+                     if (responseData.data && typeof responseData.data === 'string') apiErrorMessage = responseData.data;
+                     else if (responseData.message) apiErrorMessage = responseData.message;
+                     console.error(`API Error (Status ${response.status}, Code ${responseData.code}): ${apiErrorMessage}`);
+                     throw new Error(apiErrorMessage);
+                }
+                
+                if (responseData.data && responseData.data.timings) {
+                    displayPrayerTimes(responseData.data);
+                     if (prayerCurrentlyNow) { // Re-check "Now" status
+                        const nowPrayerTime = responseData.data.timings[prayerCurrentlyNow];
+                        if (nowPrayerTime) {
+                             const [hours, minutes] = nowPrayerTime.split(':').map(Number);
+                             const nowPrayerDate = new Date();
+                             nowPrayerDate.setHours(hours, minutes, 0, 0);
+                             const systemTime = new Date();
+                             if (Math.abs(systemTime - nowPrayerDate) < 60000) { // 1 minute margin
+                                 updateActivePrayerHighlight(prayerCurrentlyNow, true);
+                             } else {
+                                 prayerCurrentlyNow = null;
+                             }
+                        } else {
+                            prayerCurrentlyNow = null;
+                        }
+                    }
+                    startCountdown(responseData.data.timings); 
+
+                    let locName = "Current Location";
+                    if (responseData.data.meta?.timezone) { const tz = responseData.data.meta.timezone.split('/'); if (tz.length > 1) locName = tz[1].replace(/_/g, ' ');}
+                    updateLocationDisplay(locName, `Lat: ${latitude.toFixed(2)}, Lon: ${longitude.toFixed(2)}`);
+                    updateCalculationMethodDisplay(responseData.data.meta.method.name);
+                    saveUserSettings({ latitude: latitude, longitude: longitude, useGeoLocation: true, calculationMethod: PRAYER_API_METHOD, asrMethod: PRAYER_API_SCHOOL, themeIndex: currentThemeIndex });
+                } else {
+                    console.error("Invalid data structure from API (coordinates):", responseData);
+                    throw new Error('Prayer times data for coordinates received in an unexpected format.');
+                }
+            } catch (error) {
+                console.error('Coordinates fetch processing error:', error);
+                displayError(error.message || 'GeoLink failed. Manual input required or check connection.');
+                updateLocationDisplay('Error', 'GeoLink Offline');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayPrayerTimes(data) {
+            clearPrayerTimes(); 
+            if (data.date?.hijri) { const h = data.date.hijri; hijriDateEl.textContent = `H-DATE: ${h.day} ${h.month.en.toUpperCase()} ${h.year} AH`; } 
+            else { hijriDateEl.textContent = 'H-DATE: N/A'; }
+            if (data.date?.readable) {
+                const p = data.date.readable.split(' ');
+                if (p.length >=3) gregorianDateEl.textContent = `G-DATE: ${p[0]} ${p[1].toUpperCase().substring(0,3)} ${p[2]}`;
+                else gregorianDateEl.textContent = `G-DATE: ${data.date.readable}`;
+            }
+            const timings = data.timings;
+            if (!timings) { displayError('Transmission incomplete: Timings missing.'); return; }
+            Object.keys(PRAYER_NAMES).forEach(key => {
+                if (timings[key]) {
+                    const prayerNameDisplay = PRAYER_NAMES[key]; 
+                    const prayerTime = timings[key];
+                    const prayerItemEl = document.createElement('div');
+                    prayerItemEl.className = 'prayer-time-card p-3 sm:p-4 rounded-md shadow-md';
+                    prayerItemEl.dataset.prayerKey = key; 
+                    
+                    const detailsDiv = document.createElement('div');
+                    detailsDiv.className = 'prayer-details';
+                    
+                    const nameEl = document.createElement('span');
+                    if (key !== 'Sunrise') { 
+                        nameEl.className = 'prayer-name text-md sm:text-lg font-medium prayer-name-clickable';
+                        nameEl.setAttribute('role', 'button'); // ACCESSIBILITY
+                        nameEl.setAttribute('tabindex', '0');    // ACCESSIBILITY
+                        nameEl.textContent = prayerNameDisplay;
+                        nameEl.onclick = () => navigateToAthkarPage(key); // Pass the key
+                        nameEl.onkeydown = (e) => { // ACCESSIBILITY: Allow activation with Enter/Space
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                navigateToAthkarPage(key);
+                            }
+                        };
+                    } else {
+                        nameEl.className = 'prayer-name text-md sm:text-lg font-medium';
+                        nameEl.textContent = prayerNameDisplay;
+                    }
+
+                    const timeEl = document.createElement('span');
+                    timeEl.className = 'prayer-value text-lg sm:text-xl font-semibold';
+                    timeEl.textContent = prayerTime;
+                    
+                    detailsDiv.appendChild(nameEl); 
+                    detailsDiv.appendChild(timeEl);
+                    prayerItemEl.appendChild(detailsDiv);
+
+                    if (key !== 'Sunrise') {
+                        const reflectButton = document.createElement('button');
+                        reflectButton.className = 'cyber-button cyber-button-reflect ml-4';
+                        reflectButton.innerHTML = '✨ Reflect'; 
+                        reflectButton.onclick = () => fetchReflectionFromGemini(prayerNameDisplay);
+                        prayerItemEl.appendChild(reflectButton);
+                    }
+                    prayerTimesListEl.appendChild(prayerItemEl);
+                }
+            });
+        }
+        
+        function navigateToAthkarPage(prayerKey) { // Changed to prayerKey
+            // If the clicked prayer is the one currently "Now!", dismiss the alert and refresh.
+            if (prayerCurrentlyNow === prayerKey) {
+                prayerCurrentlyNow = null; 
+                updateActivePrayerHighlight(null); // Clear "Now" alert visually
+                fetchBasedOnLastKnown(); // Re-fetch to update countdown to the *new* next prayer
+            }
+            prayerTimesPageEl.classList.remove('active');
+            athkarPageEl.classList.add('active');
+            document.body.scrollTop = 0; 
+            document.documentElement.scrollTop = 0; 
+            loadAthkarContent(PRAYER_NAMES[prayerKey] || prayerKey); // Use display name for Athkar page title
+        }
+
+        function navigateToPrayerTimesPage() {
+            athkarPageEl.classList.remove('active');
+            prayerTimesPageEl.classList.add('active');
+        }
+
+        function createAthkarCard(dua) {
+            const card = document.createElement('div');
+            card.className = 'athkar-card';
+            const titleEl = document.createElement('h3');
+            titleEl.className = 'athkar-title';
+            titleEl.textContent = dua.title;
+            card.appendChild(titleEl);
+            if (dua.arabic) {
+                const arabicEl = document.createElement('p');
+                arabicEl.className = 'athkar-arabic';
+                arabicEl.textContent = dua.arabic;
+                card.appendChild(arabicEl);
+            }
+            if (dua.transliteration) {
+                const translitEl = document.createElement('p');
+                translitEl.className = 'athkar-transliteration';
+                translitEl.textContent = `Transliteration: ${dua.transliteration}`;
+                card.appendChild(translitEl);
+            }
+            if (dua.translation) {
+                const transEl = document.createElement('p');
+                transEl.className = 'athkar-translation';
+                transEl.textContent = `Translation: ${dua.translation}`;
+                card.appendChild(transEl);
+            }
+            return card;
+        }
+
+        function loadAthkarContent(prayerContextName) {
+            currentPrayerContextSpan.textContent = prayerContextName;
+            prayerSpecificAthkarListEl.innerHTML = ''; 
+            generalAthkarListEl.innerHTML = ''; 
+            let hasPrayerSpecificDua = false;
+            HISN_ALMUSLIM_DUAS.forEach(dua => {
+                if (dua.prayerContext && dua.prayerContext.includes(prayerContextName)) {
+                    prayerSpecificAthkarListEl.appendChild(createAthkarCard(dua));
+                    hasPrayerSpecificDua = true;
+                }
+                generalAthkarListEl.appendChild(createAthkarCard(dua));
+            });
+            if (!hasPrayerSpecificDua) {
+                 prayerSpecificAthkarListEl.innerHTML = `<p class="text-gray-500 italic">No specific athkar found for ${prayerContextName} in this collection. Browse general athkar below.</p>`;
+            }
+        }
+
+        function handleGetCurrentLocation() {
+            if (navigator.geolocation) {
+                showLoading(true); clearError(true); 
+                currentLocationDisplayEl.textContent = 'Initializing GeoLink... Please wait.';
+                console.log("Attempting geolocation...");
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log("Geolocation success:", position.coords);
+                        prayerCurrentlyNow = null; // Reset "Now" state on location change
+                        fetchPrayerTimesByCoordinates(position.coords.latitude, position.coords.longitude);
+                    },
+                    (error) => {
+                        console.error('Geolocation error object (raw):', error); 
+                        console.dir(error); 
+                        let errorMsg = "GeoLink Error: ";
+                        if (!error || (Object.keys(error).length === 0 && error.constructor === Object && typeof error.code === 'undefined' && !error.message) ) {
+                            console.log("Geolocation failed with an empty or non-standard error object.");
+                            errorMsg += "Could not determine your location. Geolocation may be disabled in your browser or OS, or this site may not have permission. Please check your settings or try entering a city manually.";
+                        } else if (typeof error.code !== 'undefined') { 
+                            switch(error.code) {
+                                case 1: 
+                                    errorMsg += "Permission denied by user or browser settings. Please enable location services for this site.";
+                                    break;
+                                case 2: 
+                                    errorMsg += "Location information is unavailable. Check network or GPS.";
+                                    break;
+                                case 3: 
+                                    errorMsg += "Request to get user location timed out. Please try again.";
+                                    break;
+                                default: 
+                                    errorMsg += `An unknown error occurred (Code: ${error.code}).`;
+                                    if (error.message) {
+                                        errorMsg += ` Message: ${error.message}`;
+                                    } else {
+                                        errorMsg += " No additional error message provided by the browser.";
+                                    }
+                                    break;
+                            }
+                        } else if (error.message) { 
+                            errorMsg += error.message;
+                        }
+                        
+                        displayError(errorMsg + " Using default matrix or last known settings.");
+                        if (cityInputEl.value && cityInputEl.value !== DEFAULT_CITY) {
+                            fetchPrayerTimesByCity(cityInputEl.value, countryInputEl.value);
+                        } else {
+                            fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
+                        }
+                        showLoading(false); 
+                    },
+                    { timeout: 15000, enableHighAccuracy: true } 
+                );
+            } else {
+                displayError('GeoLink module not detected in your browser. Manual input required.');
+                fetchPrayerTimesByCity(cityInputEl.value || DEFAULT_CITY, countryInputEl.value || DEFAULT_COUNTRY); 
+            }
+        }
+
+        function handleSearchLocation() {
+            const city = cityInputEl.value.trim(); 
+            const country = countryInputEl.value.trim();
+            console.log(`Search initiated with City: "${city}", Country: "${country}"`);
+            if (!city) { 
+                displayError('City_Matrix required for triangulation.'); 
+                cityInputEl.focus(); 
+                return; 
+            }
+            prayerCurrentlyNow = null; // Reset "Now" state on location change
+            fetchPrayerTimesByCity(city, country);
+        }
+
+        function populateCalculationMethods() {
+            CALCULATION_METHODS.forEach(method => {
+                const option = document.createElement('option');
+                option.value = method.id;
+                option.textContent = method.name;
+                calculationMethodSelectEl.appendChild(option);
+            });
+        }
+
+        function handleSettingsChange() {
+            PRAYER_API_METHOD = parseInt(calculationMethodSelectEl.value);
+            PRAYER_API_SCHOOL = parseInt(asrMethodSelectEl.value);
+            console.log(`Settings changed by user: Method ID: ${PRAYER_API_METHOD}, Asr School: ${PRAYER_API_SCHOOL}`);
+            prayerCurrentlyNow = null; // Reset "Now" state on settings change
+            
+            const settingsToSave = {
+                calculationMethod: PRAYER_API_METHOD,
+                asrMethod: PRAYER_API_SCHOOL,
+                city: cityInputEl.value.trim() || undefined,
+                country: countryInputEl.value.trim() || undefined,
+                themeIndex: currentThemeIndex
+            };
+            if (currentLocationDisplayEl.textContent.toLowerCase().includes('lat:')) {
+                const latLonMatch = currentLocationDisplayEl.textContent.match(/Lat: ([\d.-]+), Lon: ([\d.-]+)/);
+                if (latLonMatch) {
+                    settingsToSave.latitude = parseFloat(latLonMatch[1]);
+                    settingsToSave.longitude = parseFloat(latLonMatch[2]);
+                    settingsToSave.useGeoLocation = true;
+                }
+            } else {
+                settingsToSave.useGeoLocation = false;
+            }
+            saveUserSettings(settingsToSave);
+            fetchBasedOnLastKnown();
+        }
+
+        function toggleMasterSettings() {
+            const isHidden = masterSettingsContent.classList.contains('hidden');
+            masterSettingsContent.classList.toggle('hidden');
+            masterSettingsIcon.classList.toggle('expanded'); 
+            // ACCESSIBILITY: Toggle ARIA attribute
+            masterSettingsHeader.setAttribute('aria-expanded', String(!isHidden));
+        }
+
+
+        // --- Three.js Background Animation ---
+        let scene, camera, renderer, namesGroup;
+        const nameSprites = []; 
+        const TEXTURE_SCALE_FACTOR = 2; 
+
+        function createNameTexture(text, textColor, font, fontSize) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            const parsedFontSize = parseInt(fontSize, 10);
+            const textFont = `${parsedFontSize * TEXTURE_SCALE_FACTOR}px ${font}`; 
+            context.font = textFont;
+            
+            const metrics = context.measureText(text);
+            const textWidth = metrics.width;
+            const textHeight = parsedFontSize * 1.5 * TEXTURE_SCALE_FACTOR; 
+            
+            canvas.width = textWidth + (20 * TEXTURE_SCALE_FACTOR); 
+            canvas.height = textHeight;
+
+            context.font = textFont; 
+            context.fillStyle = textColor;
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            
+            context.fillText(text, canvas.width / 2, canvas.height / 2);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            texture.minFilter = THREE.LinearFilter; 
+            texture.magFilter = THREE.LinearFilter; 
+            return texture;
+        }
+
+        function initCyberpunkBackground() {
+            const canvasEl = document.getElementById('cyberpunk-bg');
+            if (!canvasEl) {
+                console.error("Three.js canvas element not found!");
+                return;
+            }
+            try {
+                scene = new THREE.Scene();
+                camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                renderer = new THREE.WebGLRenderer({ canvas: canvasEl, alpha: true, antialias: true });
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setClearColor(0x000000, 0);
+                namesGroup = new THREE.Group();
+                scene.add(namesGroup);
+                
+                ASMAUL_HUSNA.forEach((name, index) => {
+                    const computedStyle = getComputedStyle(bodyEl); 
+                    const initialTextColor = computedStyle.getPropertyValue('--asmaul-husna-text-color').trim().replace(/"/g, '');
+                    const initialFont = computedStyle.getPropertyValue('--font-family').trim();
+                    const initialFontSizeString = computedStyle.getPropertyValue('--asmaul-husna-font-size').trim().replace(/"/g, ''); 
+                    
+                    const texture = createNameTexture(name, initialTextColor, initialFont, initialFontSizeString);
+                    const material = new THREE.SpriteMaterial({ map: texture, transparent: true });
+                    const sprite = new THREE.Sprite(material);
+                    
+                    const phi = Math.acos(-1 + (2 * index) / ASMAUL_HUSNA.length); 
+                    const theta = Math.sqrt(ASMAUL_HUSNA.length * Math.PI) * phi;
+                    const radius = 10 + Math.random() * 5; 
+                    sprite.position.setFromSphericalCoords(radius, phi, theta);
+                    
+                    const spriteVisualScale = (1 + (name.length / 15)) * (parseInt(initialFontSizeString,10) / 20) * 1.5; 
+                    sprite.scale.set(spriteVisualScale * 2 , spriteVisualScale * 0.75, 1);
+
+
+                    sprite.userData.initialPosition = sprite.position.clone();
+                    sprite.userData.driftSpeed = new THREE.Vector3((Math.random() - 0.5) * 0.002, (Math.random() - 0.5) * 0.002, (Math.random() - 0.5) * 0.001);
+                    namesGroup.add(sprite);
+                    nameSprites.push(sprite); 
+                });
+                camera.position.z = 15; 
+                animateBackground();
+            } catch (e) {
+                console.error("Error initializing Three.js background:", e, e.stack); 
+            }
+        }
+        
+        function updateThreeJSTheme() {
+            if (!scene || nameSprites.length === 0) return; 
+
+            const computedStyle = getComputedStyle(bodyEl);
+            const textColor = computedStyle.getPropertyValue('--asmaul-husna-text-color').trim().replace(/"/g, '');
+            const font = computedStyle.getPropertyValue('--font-family').trim();
+            const fontSize = computedStyle.getPropertyValue('--asmaul-husna-font-size').trim().replace(/"/g, '');
+            const opacity = parseFloat(computedStyle.getPropertyValue('--asmaul-husna-opacity').trim());
+
+            nameSprites.forEach((sprite, index) => {
+                if (sprite.material) {
+                    if (sprite.material.map) sprite.material.map.dispose(); 
+                    const newTexture = createNameTexture(ASMAUL_HUSNA[index], textColor, font, fontSize);
+                    sprite.material.map = newTexture;
+                    sprite.material.opacity = opacity;
+                    sprite.material.needsUpdate = true; 
+                }
+            });
+        }
+
+        function animateBackground() {
+            if (!renderer || !scene || !camera) return; 
+            requestAnimationFrame(animateBackground);
+            const time = Date.now() * 0.00005; 
+            if (namesGroup) {
+                namesGroup.rotation.y = time * 0.5; 
+                namesGroup.rotation.x = Math.sin(time * 0.3) * 0.1;
+                nameSprites.forEach(sprite => {
+                    sprite.position.add(sprite.userData.driftSpeed);
+                    if (sprite.position.length() > 20) { 
+                         sprite.position.copy(sprite.userData.initialPosition).multiplyScalar(0.8 + Math.random()*0.4); 
+                    }
+                });
+            }
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            if (camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            }
+        }
+        
+        async function initApp() {
+            updateDateDisplay(); 
+            populateCalculationMethods(); 
+
+            searchLocationBtn.addEventListener('click', handleSearchLocation);
+            cityInputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSearchLocation(); });
+            countryInputEl.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSearchLocation(); });
+            getCurrentLocationBtn.addEventListener('click', handleGetCurrentLocation);
+            reflectionModalCloseBtn.addEventListener('click', hideReflectionModal);
+            cycleThemeBtn.addEventListener('click', cycleVisualTheme);
+            backToTerminalBtn.addEventListener('click', navigateToPrayerTimesPage); 
+            calculationMethodSelectEl.addEventListener('change', handleSettingsChange);
+            asrMethodSelectEl.addEventListener('change', handleSettingsChange);
+
+            masterSettingsHeader.addEventListener('click', toggleMasterSettings);
+            // ACCESSIBILITY: Set initial state for collapsible section
+            masterSettingsHeader.setAttribute('aria-expanded', 'false');
+            masterSettingsContent.classList.add('hidden'); 
+            masterSettingsIcon.classList.remove('expanded');
+
+
+            reflectionModalEl.addEventListener('click', (e) => { if (e.target === reflectionModalEl) hideReflectionModal(); });
+            
+            initCyberpunkBackground(); 
+            await initializeFirebase(); 
+            
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
