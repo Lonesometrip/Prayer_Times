@@ -375,7 +375,7 @@
         }
         .cyber-button-reflect, .prayer-name-clickable { 
             border-color: var(--prayer-value-text); color: var(--prayer-value-text);
-            font-size: 0.75rem; padding: 0.25rem 0.5rem; text-transform: none; letter-spacing: 0.4px; 
+            font-size: 0.75rem; /* text-xs */ padding: 0.25rem 0.5rem; /* py-1 px-2 */ text-transform: none; letter-spacing: 0.4px; 
             box-shadow: 0 0 2px var(--prayer-value-text), inset 0 0 2px color-mix(in srgb, var(--prayer-value-text) 30%, transparent);
             cursor: pointer;
         }
@@ -390,35 +390,42 @@
         }
 
         .prayer-time-card {
-            background-color: var(--prayer-card-bg); border-left: 2.5px solid var(--prayer-card-accent); 
+            background-color: var(--prayer-card-bg); border-left: 2px solid var(--prayer-card-accent); /* Thinner accent */
             transition: transform 0.2s ease-in-out, box-shadow 0.3s ease, background-color 0.3s ease, border-left-color 0.3s ease; 
             display: flex; justify-content: space-between; align-items: center;
         }
         .prayer-time-card:hover { 
-            transform: translateY(-2px) translateX(2px); 
-            box-shadow: 0 0 8px var(--prayer-card-accent); 
+            transform: translateY(-1px) translateX(1px); /* Smaller hover effect */
+            box-shadow: 0 0 6px var(--prayer-card-accent); 
         }
         .prayer-details { display: flex; flex-direction: column; align-items: flex-start; }
-        .prayer-name { color: var(--prayer-name-text); transition: color 0.3s ease; } 
-        .prayer-value { color: var(--prayer-value-text); text-shadow: 0 0 2px var(--prayer-value-shadow); transition: color 0.3s ease, text-shadow 0.3s ease; } 
+        /* Adjusted font sizes for prayer cards */
+        .prayer-name { color: var(--prayer-name-text); transition: color 0.3s ease; font-size: 0.75rem; /* text-xs */ margin-bottom: 0.125rem; /* mb-0.5 */ } 
+        @media (min-width: 640px) { /* sm breakpoint */
+            .prayer-name { font-size: 0.875rem; /* text-sm */ }
+        }
+        .prayer-value { color: var(--prayer-value-text); text-shadow: 0 0 2px var(--prayer-value-shadow); transition: color 0.3s ease, text-shadow 0.3s ease; font-size: 0.875rem; /* text-sm */ }
+        @media (min-width: 640px) { /* sm breakpoint */
+            .prayer-value { font-size: 1rem; /* text-base */ }
+        }
         
         .current-prayer-active {
-            border-left-width: 4px; 
+            border-left-width: 3px; /* Slightly thinner active border */
             border-left-color: var(--header-glow1) !important; 
-            box-shadow: 0 0 15px var(--header-glow1), 0 0 6px var(--prayer-card-accent) inset; 
-            transform: scale(1.02); 
-            background-color: color-mix(in srgb, var(--prayer-card-bg) 75%, var(--header-glow1) 25%) !important; 
+            box-shadow: 0 0 12px var(--header-glow1), 0 0 5px var(--prayer-card-accent) inset; 
+            transform: scale(1.015); /* Slightly smaller scale */
+            background-color: color-mix(in srgb, var(--prayer-card-bg) 78%, var(--header-glow1) 22%) !important; 
         }
         .current-prayer-active .prayer-name, 
         .current-prayer-active .prayer-value {
             color: var(--header-glow2) !important; 
             font-weight: bold;
-            text-shadow: 0 0 4px var(--header-glow2), 0 0 1.5px var(--text-color);
+            text-shadow: 0 0 3px var(--header-glow2), 0 0 1px var(--text-color);
         }
         .current-prayer-active .cyber-button-reflect { 
             border-color: var(--header-glow2);
             color: var(--header-glow2);
-            box-shadow: 0 0 4px var(--header-glow2), inset 0 0 4px color-mix(in srgb, var(--header-glow2) 50%, transparent);
+            box-shadow: 0 0 3px var(--header-glow2), inset 0 0 3px color-mix(in srgb, var(--header-glow2) 50%, transparent);
         }
         .current-prayer-active .cyber-button-reflect:hover {
             background-color: var(--header-glow2);
@@ -426,11 +433,11 @@
         }
 
         .prayer-time-now-alert {
-            border-left-width: 6px !important; 
+            border-left-width: 5px !important; 
             border-left-color: var(--header-glow2) !important; 
-            box-shadow: 0 0 20px var(--header-glow2), 0 0 12px var(--prayer-card-accent) inset, 0 0 25px var(--header-glow1) !important; 
-            transform: scale(1.04) !important; 
-            background-color: color-mix(in srgb, var(--prayer-card-bg) 55%, var(--header-glow2) 45%) !important; 
+            box-shadow: 0 0 18px var(--header-glow2), 0 0 10px var(--prayer-card-accent) inset, 0 0 20px var(--header-glow1) !important; 
+            transform: scale(1.03) !important; 
+            background-color: color-mix(in srgb, var(--prayer-card-bg) 60%, var(--header-glow2) 40%) !important; 
             animation: pulse-now-alert 1s infinite alternate;
             z-index: 10; 
         }
@@ -438,16 +445,16 @@
         .prayer-time-now-alert .prayer-value {
             color: var(--bg-color) !important; 
             background-color: var(--header-glow1); 
-            padding: 1.5px 4px; 
-            border-radius: 2.5px;
+            padding: 1px 3px; 
+            border-radius: 2px;
             font-weight: bold;
-            text-shadow: 0 0 6px var(--bg-color);
+            text-shadow: 0 0 5px var(--bg-color);
         }
         .prayer-time-now-alert .cyber-button-reflect {
             border-color: var(--bg-color) !important;
             color: var(--bg-color) !important;
             background-color: var(--header-glow1) !important;
-            box-shadow: 0 0 6px var(--bg-color);
+            box-shadow: 0 0 5px var(--bg-color);
         }
         .prayer-time-now-alert .cyber-button-reflect:hover {
             background-color: var(--header-glow2) !important;
@@ -458,11 +465,11 @@
         @keyframes pulse-now-alert {
             from {
                 opacity: 1;
-                box-shadow: 0 0 20px var(--header-glow2), 0 0 12px var(--prayer-card-accent) inset, 0 0 25px var(--header-glow1);
+                box-shadow: 0 0 18px var(--header-glow2), 0 0 10px var(--prayer-card-accent) inset, 0 0 20px var(--header-glow1);
             }
             to {
                 opacity: 0.85;
-                box-shadow: 0 0 30px var(--header-glow2), 0 0 18px var(--prayer-card-accent) inset, 0 0 35px var(--header-glow1), 0 0 8px var(--text-color);
+                box-shadow: 0 0 28px var(--header-glow2), 0 0 15px var(--prayer-card-accent) inset, 0 0 30px var(--header-glow1), 0 0 7px var(--text-color);
             }
         }
 
@@ -553,18 +560,18 @@
         #next-prayer-ghost-container {
             position: relative; 
             width: 90%; 
-            max-width: 600px; /* Made wider */
+            max-width: 600px; 
             margin-left: auto;
             margin-right: auto;
-            margin-top: 1.5rem; /* Space above it, Tailwind mt-6 */
-            margin-bottom: -2.5rem; /* Pulls footer up. Adjust based on actual footer text height */
-            padding: 1rem 1.5rem; /* Tailwind py-4 px-6 */
+            margin-top: 1.5rem; 
+            margin-bottom: -2.5rem; 
+            padding: 1rem 1.5rem; 
             background-color: var(--ghost-prayer-bg);
-            border: 2.5px solid var(--ghost-prayer-border); /* Thicker border */
-            border-radius: 0.5rem; /* rounded-lg */
+            border: 2.5px solid var(--ghost-prayer-border); 
+            border-radius: 0.5rem; 
             color: var(--ghost-prayer-text);
-            box-shadow: 0 0 25px var(--ghost-prayer-shadow), 0 0 12px var(--ghost-prayer-shadow) inset; /* More intense shadow */
-            z-index: 20; /* Ensure it's above normal flow footer content */
+            box-shadow: 0 0 25px var(--ghost-prayer-shadow), 0 0 12px var(--ghost-prayer-shadow) inset; 
+            z-index: 20; 
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s ease-out, visibility 0s linear 0.2s; 
@@ -573,32 +580,31 @@
             justify-content: center;
             align-items: center;
             flex-wrap: wrap; 
-            gap: 0.75rem; /* Tailwind gap-3 */
+            gap: 0.75rem; 
         }
         #next-prayer-ghost-container.visible {
             opacity: 1;
             visibility: visible;
             transition: opacity 0.1s ease-in, visibility 0s;
-            animation: pulseGhostBg 1.0s infinite alternate ease-in-out; /* Faster, more noticeable pulse */
+            animation: pulseGhostBg 1.0s infinite alternate ease-in-out; 
         }
         #next-prayer-ghost-container.glitching {
-            /* Glitch animation handles its own opacity/visibility during its active phase */
             animation: glitchEffect 0.8s linear forwards, pulseGhostBg 1.0s infinite alternate ease-in-out; 
         }
 
         #ghost-prayer-name {
-            font-weight: 700; /* font-bold */
+            font-weight: 700; 
             color: var(--ghost-prayer-name-text);
             font-size: 1.5rem; /* text-2xl */
-            line-height: 2rem; /* leading-8 */
-            text-shadow: 0 0 8px var(--ghost-prayer-name-text), 0 0 4px var(--header-glow1); /* Enhanced shadow */
+            line-height: 2rem; 
+            text-shadow: 0 0 8px var(--ghost-prayer-name-text), 0 0 4px var(--header-glow1); 
         }
         #ghost-prayer-time {
             color: var(--ghost-prayer-time-text);
             font-size: 1.25rem; /* text-xl */
-            line-height: 1.75rem; /* leading-7 */
-            text-shadow: 0 0 6px var(--ghost-prayer-shadow), 0 0 3px var(--header-glow2); /* Enhanced shadow */
-            font-weight: 600; /* font-semibold */
+            line-height: 1.75rem; 
+            text-shadow: 0 0 6px var(--ghost-prayer-shadow), 0 0 3px var(--header-glow2); 
+            font-weight: 600; 
         }
         
         @keyframes pulseGhostBg {
@@ -862,9 +868,37 @@
                     if (user) {
                         currentUserId = user.uid;
                         console.log("User is signed in with UID:", currentUserId);
-                        userIdDisplayEl.textContent = `User ID: ${currentUserId}`; 
+                        userIdDisplayEl.textContent = `User ID: ${currentUserId}`;
                         isAuthReady = true;
-                        await loadUserSettings(); 
+
+                        let geoAttemptedAndFetched = false;
+
+                        if (navigator.geolocation) {
+                            console.log("Attempting initial geolocation on startup...");
+                            currentLocationDisplayEl.textContent = 'Attempting GeoLink...';
+                            showLoading(true); 
+                            try {
+                                const position = await new Promise((resolve, reject) => {
+                                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000, enableHighAccuracy: true });
+                                });
+                                await fetchPrayerTimesByCoordinates(position.coords.latitude, position.coords.longitude);
+                                geoAttemptedAndFetched = true; 
+                            } catch (error) {
+                                console.warn('Initial geolocation failed or denied on startup:', error);
+                                currentLocationDisplayEl.textContent = 'GeoLink failed. Loading saved/default.';
+                                showLoading(false); 
+                            }
+                        } else {
+                            console.log("Geolocation not supported. Loading saved/default settings.");
+                            currentLocationDisplayEl.textContent = 'GeoLink not supported.';
+                        }
+
+                        if (geoAttemptedAndFetched) {
+                            await loadNonLocationSettings(); 
+                        } else {
+                            await loadUserSettings(); 
+                        }
+                        
                     } else {
                         console.log("User is signed out. Attempting to sign in...");
                         isAuthReady = false;
@@ -890,6 +924,51 @@
                 applyDefaultSettingsAndFetch();
             }
         }
+        
+        async function loadNonLocationSettings() {
+            if (!isAuthReady || !currentUserId || !db) {
+                console.warn("Cannot load non-location settings: Firebase not ready or user not authenticated.");
+                PRAYER_API_METHOD = DEFAULT_PRAYER_API_METHOD;
+                PRAYER_API_SCHOOL = DEFAULT_PRAYER_API_SCHOOL;
+                currentThemeIndex = DEFAULT_THEME_INDEX;
+                ghostIntervalSeconds = DEFAULT_GHOST_INTERVAL_SECONDS;
+            } else {
+                const settingsRef = doc(db, `artifacts/${appId}/users/${currentUserId}/prayerGridSettings`, "userPreferences");
+                try {
+                    const docSnap = await getDoc(settingsRef);
+                    if (docSnap.exists()) {
+                        const settings = docSnap.data();
+                        console.log("Loading non-location settings from Firestore:", settings);
+                        PRAYER_API_METHOD = settings.calculationMethod !== undefined ? settings.calculationMethod : DEFAULT_PRAYER_API_METHOD;
+                        PRAYER_API_SCHOOL = settings.asrMethod !== undefined ? settings.asrMethod : DEFAULT_PRAYER_API_SCHOOL;
+                        currentThemeIndex = settings.themeIndex !== undefined ? settings.themeIndex : DEFAULT_THEME_INDEX;
+                        ghostIntervalSeconds = settings.ghostInterval !== undefined ? settings.ghostInterval : DEFAULT_GHOST_INTERVAL_SECONDS;
+                    } else {
+                        console.log("No user settings found for non-location settings. Applying defaults.");
+                        PRAYER_API_METHOD = DEFAULT_PRAYER_API_METHOD;
+                        PRAYER_API_SCHOOL = DEFAULT_PRAYER_API_SCHOOL;
+                        currentThemeIndex = DEFAULT_THEME_INDEX;
+                        ghostIntervalSeconds = DEFAULT_GHOST_INTERVAL_SECONDS;
+                    }
+                } catch (error) {
+                    console.error("Error loading non-location settings from Firestore:", error);
+                    PRAYER_API_METHOD = DEFAULT_PRAYER_API_METHOD;
+                    PRAYER_API_SCHOOL = DEFAULT_PRAYER_API_SCHOOL;
+                    currentThemeIndex = DEFAULT_THEME_INDEX;
+                    ghostIntervalSeconds = DEFAULT_GHOST_INTERVAL_SECONDS;
+                }
+            }
+            calculationMethodSelectEl.value = PRAYER_API_METHOD;
+            asrMethodSelectEl.value = PRAYER_API_SCHOOL;
+            ghostIntervalInputEl.value = ghostIntervalSeconds;
+            applyTheme(THEMES[currentThemeIndex]);
+            startGhostInterval();
+            const method = CALCULATION_METHODS.find(m => m.id === PRAYER_API_METHOD);
+            if (method && calculationMethodDisplayEl.textContent.includes("default")) { 
+                 updateCalculationMethodDisplay(method.name);
+            }
+        }
+
 
         async function saveUserSettings(settingsToSave) {
             if (!isAuthReady || !currentUserId || !db) {
@@ -910,7 +989,7 @@
             }
         }
 
-        async function loadUserSettings() {
+        async function loadUserSettings() { 
             if (!isAuthReady || !currentUserId || !db) {
                 console.warn("Cannot load settings: Firebase not ready or user not authenticated.");
                 applyDefaultSettingsAndFetch(); 
@@ -926,7 +1005,7 @@
                 const docSnap = await getDoc(settingsRef);
                 if (docSnap.exists()) {
                     const settings = docSnap.data();
-                    console.log("User settings loaded from Firestore:", settings);
+                    console.log("User settings loaded from Firestore (full load):", settings);
 
                     cityInputEl.value = settings.city || DEFAULT_CITY;
                     countryInputEl.value = settings.country || DEFAULT_COUNTRY;
@@ -948,7 +1027,7 @@
                         fetchPrayerTimesByCity(cityInputEl.value, countryInputEl.value);
                     }
                 } else {
-                    console.log("No user settings found in Firestore. Applying defaults.");
+                    console.log("No user settings found in Firestore. Applying defaults and fetching.");
                     applyDefaultSettingsAndFetch();
                 }
             } catch (error) {
@@ -971,7 +1050,7 @@
             ghostIntervalInputEl.value = ghostIntervalSeconds;
             applyTheme(THEMES[currentThemeIndex]);
             startGhostInterval();
-            fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY);
+            fetchPrayerTimesByCity(DEFAULT_CITY, DEFAULT_COUNTRY); 
         }
 
 
@@ -1096,7 +1175,7 @@
         function updateActivePrayerHighlight(activeKey, isNow = false) {
             document.querySelectorAll('.prayer-time-card').forEach(card => {
                 card.classList.remove('current-prayer-active', 'prayer-time-now-alert');
-                card.classList.add('p-2', 'sm:p-3'); 
+                card.classList.add('p-1.5', 'sm:p-2'); // Adjusted padding for smaller tiles
                 if (activeKey && card.dataset.prayerKey === activeKey) {
                     if (isNow) {
                         card.classList.add('prayer-time-now-alert');
@@ -1389,18 +1468,19 @@
                     const prayerNameDisplay = PRAYER_NAMES[key]; 
                     const prayerTime = timings[key];
                     const prayerItemEl = document.createElement('div');
-                    prayerItemEl.className = 'prayer-time-card p-2 sm:p-3 rounded-md shadow-md';
+                    // Adjusted padding for prayer cards: p-1.5 sm:p-2
+                    prayerItemEl.className = 'prayer-time-card p-1.5 sm:p-2 rounded-md shadow-md';
                     prayerItemEl.dataset.prayerKey = key; 
                     
                     const detailsDiv = document.createElement('div');
                     detailsDiv.className = 'prayer-details';
                     
                     const nameEl = document.createElement('span');
+                     // Adjusted font sizes for prayer name: text-xs sm:text-sm, mb-0.5
+                    nameEl.className = 'prayer-name font-medium prayer-name-clickable text-xs sm:text-sm mb-0.5';
                     if (key !== 'Sunrise') { 
-                        nameEl.className = 'prayer-name text-sm sm:text-base font-medium prayer-name-clickable';
                         nameEl.setAttribute('role', 'button'); 
                         nameEl.setAttribute('tabindex', '0');    
-                        nameEl.textContent = prayerNameDisplay;
                         nameEl.onclick = () => navigateToAthkarPage(key); 
                         nameEl.onkeydown = (e) => { 
                             if (e.key === 'Enter' || e.key === ' ') {
@@ -1408,13 +1488,13 @@
                                 navigateToAthkarPage(key);
                             }
                         };
-                    } else {
-                        nameEl.className = 'prayer-name text-sm sm:text-base font-medium';
-                        nameEl.textContent = prayerNameDisplay;
                     }
+                    nameEl.textContent = prayerNameDisplay;
+
 
                     const timeEl = document.createElement('span');
-                    timeEl.className = 'prayer-value text-base sm:text-lg font-semibold';
+                    // Adjusted font sizes for prayer time: text-sm sm:text-base
+                    timeEl.className = 'prayer-value font-semibold text-sm sm:text-base';
                     timeEl.textContent = prayerTime;
                     
                     detailsDiv.appendChild(nameEl); 
@@ -1423,7 +1503,8 @@
 
                     if (key !== 'Sunrise') {
                         const reflectButton = document.createElement('button');
-                        reflectButton.className = 'cyber-button cyber-button-reflect ml-2 sm:ml-3'; 
+                        // Adjusted reflect button size & margin: text-xs py-1 px-1.5 ml-1.5 sm:ml-2
+                        reflectButton.className = 'cyber-button cyber-button-reflect text-xs py-1 px-1.5 ml-1.5 sm:ml-2'; 
                         reflectButton.innerHTML = '✨ Reflect'; 
                         reflectButton.onclick = () => fetchReflectionFromGemini(prayerNameDisplay);
                         prayerItemEl.appendChild(reflectButton);
